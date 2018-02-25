@@ -72,7 +72,7 @@ func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface
 
 func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.NewPostRequest)
-	return endpoint.NewPostRequest{
+	return &endpoint.NewPostRequest{
 		Author:   req.Author,
 		Sitename: req.Sitename,
 		Filename: req.Filename,
