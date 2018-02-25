@@ -15,7 +15,7 @@ build: clean
 	-o ${APP}
 
 container: build
-	docker build -t sitemgr:${COMMIT} .
+	docker build -t contentmgr:${COMMIT} .
 
 minikube: container
 	cat k8s/k8s.yaml | \
