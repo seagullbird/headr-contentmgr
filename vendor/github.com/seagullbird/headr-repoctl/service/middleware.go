@@ -33,3 +33,9 @@ func (mw loggingMiddleware) DeleteSite(ctx context.Context, email, sitename stri
 	mw.logger.Log("method", "DeleteSite", "email", email, "sitename", sitename, "err", err)
 	return
 }
+
+func (mw loggingMiddleware) NewPost(ctx context.Context, author, sitename, filename, content string) (err error) {
+	err = mw.next.NewPost(ctx, author, sitename, filename, content)
+	mw.logger.Log("method", "NewPost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+	return
+}
