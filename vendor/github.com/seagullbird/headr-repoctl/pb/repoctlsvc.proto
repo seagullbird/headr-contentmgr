@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package pb;
+
+// The Repoctl service definition.
+service Repoctl {
+    rpc NewSite (NewSiteRequest) returns (NewSiteReply) {}
+    rpc DeleteSite (DeleteSiteRequest) returns (DeleteSiteReply) {}
+}
+
+message NewSiteRequest {
+    string email = 1;
+    string sitename = 2;
+}
+
+message NewSiteReply {
+    string err = 1;
+}
+
+message DeleteSiteRequest {
+    string email = 1;
+    string sitename = 2;
+}
+
+message DeleteSiteReply {
+    string err = 1;
+}

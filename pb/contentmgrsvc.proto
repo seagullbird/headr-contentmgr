@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+
+// The Contentmgr service definition.
+service Contentmgr {
+    // Create a new post.
+    rpc NewPost (CreateNewPostRequest) returns (CreateNewPostReply) {}
+}
+
+// The new post request contains zero parameters.
+message CreateNewPostRequest {
+}
+
+// The new post response contains the result of the creation.
+message CreateNewPostReply {
+    string err = 1;
+}
