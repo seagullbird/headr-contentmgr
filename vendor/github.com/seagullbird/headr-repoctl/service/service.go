@@ -6,6 +6,7 @@ import (
 	"github.com/seagullbird/headr-common/mq"
 	"github.com/seagullbird/headr-common/mq/dispatch"
 	"github.com/seagullbird/headr-repoctl/config"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 type Service interface {
 	NewSite(ctx context.Context, email, sitename string) error
 	DeleteSite(ctx context.Context, email, sitename string) error
+	NewPost(ctx context.Context, author, sitename, filename, content string) error
 }
 
 func New(dispatcher dispatch.Dispatcher, logger log.Logger) Service {
@@ -56,6 +58,14 @@ func (s basicService) DeleteSite(ctx context.Context, email, sitename string) er
 	cmd := exec.Command("rm", "-rf", sitepath)
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s basicService) NewPost(ctx context.Context, author, sitename, filename, content string) error {
+	postPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts", filename)
+	if err := ioutil.WriteFile(postPath, []byte(content), 644); err != nil {
 		return err
 	}
 	return nil

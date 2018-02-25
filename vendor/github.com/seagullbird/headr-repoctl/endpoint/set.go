@@ -10,6 +10,7 @@ import (
 type Set struct {
 	NewSiteEndpoint    endpoint.Endpoint
 	DeleteSiteEndpoint endpoint.Endpoint
+	NewPostEndpoint    endpoint.Endpoint
 }
 
 func New(svc service.Service, logger log.Logger) Set {
@@ -22,6 +23,11 @@ func New(svc service.Service, logger log.Logger) Set {
 	{
 		deletesiteEndpoint = MakeDeleteSiteEndpoint(svc)
 		deletesiteEndpoint = LoggingMiddleware(logger)(deletesiteEndpoint)
+	}
+	var newpostEndpoint endpoint.Endpoint
+	{
+		newpostEndpoint = MakeNewPostEndpoint(svc)
+		newpostEndpoint = LoggingMiddleware(logger)(newpostEndpoint)
 	}
 	return Set{
 		NewSiteEndpoint:    newsiteEndpoint,
@@ -47,6 +53,20 @@ func (s Set) DeleteSite(ctx context.Context, email, sitename string) error {
 	return response.Err
 }
 
+func (s Set) NewPost(ctx context.Context, author, sitename, filename, content string) error {
+	resp, err := s.NewPostEndpoint(ctx, NewPostRequest{
+		Author:   author,
+		Sitename: sitename,
+		Filename: filename,
+		Content:  content,
+	})
+	if err != nil {
+		return err
+	}
+	response := resp.(NewPostResponse)
+	return response.Err
+}
+
 func MakeNewSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewSiteRequest)
@@ -60,5 +80,13 @@ func MakeDeleteSiteEndpoint(svc service.Service) endpoint.Endpoint {
 		req := request.(DeleteSiteRequest)
 		err = svc.DeleteSite(ctx, req.Email, req.SiteName)
 		return DeleteSiteResponse{Err: err}, err
+	}
+}
+
+func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(NewPostRequest)
+		err = svc.NewPost(ctx, req.Author, req.Sitename, req.Filename, req.Content)
+		return NewPostResponse{Err: err}, err
 	}
 }

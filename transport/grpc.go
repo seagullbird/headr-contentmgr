@@ -61,12 +61,26 @@ func (s *grpcServer) NewPost(ctx context.Context, req *pb.CreateNewPostRequest) 
 
 func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.NewPostRequest)
-	return &pb.CreateNewPostRequest{}, nil
+	return &pb.CreateNewPostRequest{
+		Title:    req.Title,
+		Summary:  req.Summary,
+		Content:  req.Content,
+		Tags:     req.Tags,
+		Author:   req.Author,
+		Sitename: req.Sitename,
+	}, nil
 }
 
 func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.CreateNewPostRequest)
-	return endpoint.NewPostRequest{}, nil
+	return endpoint.NewPostRequest{
+		Title:    req.Title,
+		Summary:  req.Summary,
+		Content:  req.Content,
+		Tags:     req.Tags,
+		Author:   req.Author,
+		Sitename: req.Sitename,
+	}, nil
 }
 
 func encodeGRPCNewPostResponse(_ context.Context, response interface{}) (interface{}, error) {

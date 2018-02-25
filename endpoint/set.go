@@ -22,7 +22,7 @@ func New(svc service.Service, logger log.Logger) Set {
 	}
 }
 
-func (s Set) NewPost(ctx context.Context) error {
+func (s Set) NewPost(ctx context.Context, post service.Post) error {
 	resp, err := s.NewPostEndpoint(ctx, NewPostRequest{})
 	if err != nil {
 		return err
@@ -33,8 +33,9 @@ func (s Set) NewPost(ctx context.Context) error {
 
 func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		//req := request.(NewPostRequest)
-		err = svc.NewPost(ctx)
+		req := request.(NewPostRequest)
+		post := req.toPost()
+		err = svc.NewPost(ctx, post)
 		return NewPostResponse{Err: err}, err
 	}
 }

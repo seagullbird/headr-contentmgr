@@ -6,6 +6,7 @@ package pb;
 service Repoctl {
     rpc NewSite (NewSiteRequest) returns (NewSiteReply) {}
     rpc DeleteSite (DeleteSiteRequest) returns (DeleteSiteReply) {}
+    rpc NewPost (NewPostRequest) returns (NewPostReply) {}
 }
 
 message NewSiteRequest {
@@ -23,5 +24,16 @@ message DeleteSiteRequest {
 }
 
 message DeleteSiteReply {
+    string err = 1;
+}
+
+message NewPostRequest {
+    string author = 1;
+    string sitename = 2;
+    string filename = 3;
+    string content = 4;
+}
+
+message NewPostReply {
     string err = 1;
 }

@@ -10,6 +10,12 @@ service Contentmgr {
 
 // The new post request contains zero parameters.
 message CreateNewPostRequest {
+    string title = 1;
+    string summary = 2;
+    string content = 3;
+    repeated string tags = 4;
+    string author = 5;
+    string sitename = 6;
 }
 
 // The new post response contains the result of the creation.

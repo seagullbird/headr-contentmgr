@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	NewPost(ctx context.Context) error
+	NewPost(ctx context.Context, post Post) error
 }
 
 func New(repoctlsvc repoctlservice.Service, logger log.Logger) Service {
@@ -29,6 +29,8 @@ func NewBasicService(repoctlsvc repoctlservice.Service) basicService {
 	}
 }
 
-func (s basicService) NewPost(ctx context.Context) error {
-	return nil
+func (s basicService) NewPost(ctx context.Context, post Post) error {
+	filename := post.Filename + "." + post.Filetype
+	filecontent := post.String()
+	return s.repoctlsvc.NewPost(ctx, post.Author, post.Sitename, filename, filecontent)
 }
