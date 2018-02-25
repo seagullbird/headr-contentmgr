@@ -64,8 +64,16 @@ func (s basicService) DeleteSite(ctx context.Context, email, sitename string) er
 }
 
 func (s basicService) NewPost(ctx context.Context, author, sitename, filename, content string) error {
-	postPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts", filename)
-	if err := ioutil.WriteFile(postPath, []byte(content), 644); err != nil {
+	postsPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts")
+	if _, err := os.Stat(postsPath); err != nil {
+		if os.IsNotExist(err) {
+			os.MkdirAll(postsPath, 0644)
+		} else {
+			return err
+		}
+	}
+	postPath := filepath.Join(postsPath, filename)
+	if err := ioutil.WriteFile(postPath, []byte(content), 0644); err != nil {
 		return err
 	}
 	return nil

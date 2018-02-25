@@ -16,6 +16,7 @@ message CreateNewPostRequest {
     repeated string tags = 4;
     string author = 5;
     string sitename = 6;
+    string date = 7;
 }
 
 // The new post response contains the result of the creation.

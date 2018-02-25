@@ -1,7 +1,7 @@
 package service
 
 import (
-	"strconv"
+	"encoding/json"
 	"strings"
 )
 
@@ -23,16 +23,8 @@ type Post struct {
 }
 
 func (fm FrontMatter) String() string {
-	// TODO: Replace this with yaml encoding lib
-	lines := []string{
-		"---",
-		"title: " + fm.Title,
-		"date: " + fm.Date,
-		"draft: " + strconv.FormatBool(fm.Draft),
-		"tags: [" + strings.Join(fm.Tags, ", ") + "]",
-		"---",
-	}
-	return strings.Join(lines, "\n")
+	fmRaw, _ := json.MarshalIndent(&fm, "", "  ")
+	return string(fmRaw) + "\n"
 }
 
 func (p Post) String() string {

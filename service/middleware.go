@@ -25,6 +25,6 @@ type loggingMiddleware struct {
 
 func (mw loggingMiddleware) NewPost(ctx context.Context, post Post) (err error) {
 	err = mw.next.NewPost(ctx, post)
-	mw.logger.Log("method", "NewPost", "author", post.Author, "sitename", post.Sitename, "title", post.FM.Title, "err", err)
+	mw.logger.Log("method", "NewPost", "author", post.Author, "sitename", post.Sitename, "title", post.FM.Title, "date", post.FM.Date, "err", err)
 	return
 }

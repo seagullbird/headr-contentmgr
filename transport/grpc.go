@@ -68,6 +68,7 @@ func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface
 		Tags:     req.Tags,
 		Author:   req.Author,
 		Sitename: req.Sitename,
+		Date:     req.Date,
 	}, nil
 }
 
@@ -80,6 +81,7 @@ func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface
 		Tags:     req.Tags,
 		Author:   req.Author,
 		Sitename: req.Sitename,
+		Date:     req.Date,
 	}, nil
 }
 

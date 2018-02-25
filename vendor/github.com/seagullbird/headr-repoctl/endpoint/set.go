@@ -32,6 +32,7 @@ func New(svc service.Service, logger log.Logger) Set {
 	return Set{
 		NewSiteEndpoint:    newsiteEndpoint,
 		DeleteSiteEndpoint: deletesiteEndpoint,
+		NewPostEndpoint:    newpostEndpoint,
 	}
 }
 
