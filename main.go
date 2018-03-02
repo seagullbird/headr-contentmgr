@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-contentmgr/config"
+	"github.com/seagullbird/headr-contentmgr/db"
 	"github.com/seagullbird/headr-contentmgr/endpoint"
 	"github.com/seagullbird/headr-contentmgr/pb"
 	"github.com/seagullbird/headr-contentmgr/service"
@@ -32,8 +33,10 @@ func main() {
 
 	// repoctl service
 	repoctlsvc := repoctltransport.NewGRPCClient(conn, logger)
+	// database
+	store := db.New(logger)
 	var (
-		service    = service.New(repoctlsvc, logger)
+		service    = service.New(repoctlsvc, store, logger)
 		endpoints  = endpoint.New(service, logger)
 		grpcServer = transport.NewGRPCServer(endpoints, logger)
 	)

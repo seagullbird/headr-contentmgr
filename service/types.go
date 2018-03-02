@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"github.com/seagullbird/headr-contentmgr/db"
 	"strings"
 )
 
@@ -17,9 +18,9 @@ type Post struct {
 	Sitename string      `json:"sitename"`
 	Filename string      `json:"filename"`
 	Filetype string      `json:"filetype"`
-	FM       FrontMatter `json:"fm"`
+	FM       FrontMatter `json:"fm`
 	Summary  string      `json:"summary"`
-	Content  string      `json:"content"`
+	Content  string      `json:"content" gorm:"-"`
 }
 
 func (fm FrontMatter) String() string {
@@ -35,4 +36,18 @@ func (p Post) String() string {
 		p.Content,
 	}
 	return strings.Join(lines, "\n")
+}
+
+func (p Post) Model() *db.Post {
+	return &db.Post{
+		p.Author,
+		p.Sitename,
+		p.Filename,
+		p.Filetype,
+		p.FM.Title,
+		p.FM.Date,
+		p.FM.Draft,
+		strings.Join(p.FM.Tags, " "),
+		p.Summary,
+	}
 }
