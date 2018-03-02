@@ -21,6 +21,6 @@ message CreateNewPostRequest {
 
 // The new post response contains the result of the creation.
 message CreateNewPostReply {
-    string id = 1;
+    uint64 id = 1;
     string err = 2;
 }

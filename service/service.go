@@ -5,11 +5,10 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-contentmgr/db"
 	repoctlservice "github.com/seagullbird/headr-repoctl/service"
-	"strconv"
 )
 
 type Service interface {
-	NewPost(ctx context.Context, post Post) (string, error)
+	NewPost(ctx context.Context, post Post) (uint, error)
 }
 
 func New(repoctlsvc repoctlservice.Service, store db.Store, logger log.Logger) Service {
@@ -33,12 +32,12 @@ func NewBasicService(repoctlsvc repoctlservice.Service, store db.Store) basicSer
 	}
 }
 
-func (s basicService) NewPost(ctx context.Context, post Post) (string, error) {
+func (s basicService) NewPost(ctx context.Context, post Post) (uint, error) {
 	id, err := s.store.InsertPost(post.Model())
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	filename := post.Filename + "." + post.Filetype
 	filecontent := post.String()
-	return strconv.Itoa(id), s.repoctlsvc.NewPost(ctx, post.Author, post.Sitename, filename, filecontent)
+	return id, s.repoctlsvc.NewPost(ctx, post.Author, post.Sitename, filename, filecontent)
 }

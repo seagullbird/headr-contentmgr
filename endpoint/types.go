@@ -7,6 +7,6 @@ type NewPostRequest struct {
 }
 
 type NewPostResponse struct {
-	Id  string `json:"id"`
-	Err error  `json:"-"`
+	Id  uint  `json:"id"`
+	Err error `json:"-"`
 }

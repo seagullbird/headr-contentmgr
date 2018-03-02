@@ -1,7 +1,9 @@
 package db
 
+import "github.com/jinzhu/gorm"
+
 type Post struct {
-	Id       int    `json:"id"`
+	gorm.Model
 	Author   string `json:"author"`
 	Sitename string `json:"sitename"`
 	Filename string `json:"filename"`

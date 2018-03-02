@@ -22,10 +22,10 @@ func New(svc service.Service, logger log.Logger) Set {
 	}
 }
 
-func (s Set) NewPost(ctx context.Context, post service.Post) (string, error) {
+func (s Set) NewPost(ctx context.Context, post service.Post) (uint, error) {
 	resp, err := s.NewPostEndpoint(ctx, NewPostRequest{Post: post})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 	response := resp.(NewPostResponse)
 	return response.Id, response.Err

@@ -95,14 +95,14 @@ func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface
 func encodeGRPCNewPostResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.NewPostResponse)
 	return &pb.CreateNewPostReply{
-		Id:  resp.Id,
+		Id:  uint64(resp.Id),
 		Err: err2str(resp.Err),
 	}, nil
 }
 
 func decodeGRPCNewPostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.CreateNewPostReply)
-	return endpoint.NewPostResponse{Id: reply.Id, Err: str2err(reply.Err)}, nil
+	return endpoint.NewPostResponse{Id: uint(reply.Id), Err: str2err(reply.Err)}, nil
 }
 
 func err2str(err error) string {
