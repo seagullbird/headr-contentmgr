@@ -21,7 +21,7 @@ type Post struct {
 	Filetype string      `json:"filetype"`
 	FM       FrontMatter `json:"fm`
 	Summary  string      `json:"summary"`
-	Content  string      `json:"content" gorm:"-"`
+	Content  string      `json:"content"`
 }
 
 func (fm FrontMatter) String() string {
