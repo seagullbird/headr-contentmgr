@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
+	"github.com/gorilla/mux"
 	"github.com/seagullbird/headr-contentmgr/endpoint"
 	"net/http"
 )
@@ -18,14 +19,14 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 		httptransport.ServerErrorEncoder(errorEncoder),
 		httptransport.ServerErrorLogger(logger),
 	}
-	m := http.NewServeMux()
-	m.Handle("/create-new-post", httptransport.NewServer(
+	r := mux.NewRouter()
+	r.Methods("POST").Path("/posts/").Handler(httptransport.NewServer(
 		endpoints.NewPostEndpoint,
 		decodeHTTPNewPostRequest,
 		encodeHTTPGenericResponse,
 		options...,
 	))
-	return m
+	return r
 }
 
 func err2code(err error) int {
