@@ -7,7 +7,7 @@ import (
 )
 
 type Store interface {
-	InsertPost(post *Post) error
+	InsertPost(post *Post) (id int, err error)
 	DeletePost(id string) error
 	GetPost(id string) error
 	PatchPost(post *Post) error
@@ -28,9 +28,9 @@ func New(logger log.Logger) Store {
 	}
 }
 
-func (s *databaseStore) InsertPost(post *Post) error {
+func (s *databaseStore) InsertPost(post *Post) (id int, err error) {
 	s.db.Create(post)
-	return nil
+	return post.Id, nil
 }
 
 func (s *databaseStore) DeletePost(id string) error {

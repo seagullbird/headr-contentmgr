@@ -1,6 +1,7 @@
 package db
 
 type Post struct {
+	Id       int    `json:"id"`
 	Author   string `json:"author"`
 	Sitename string `json:"sitename"`
 	Filename string `json:"filename"`

@@ -44,7 +44,7 @@ func errorEncoder(_ context.Context, err error, w http.ResponseWriter) {
 
 func decodeHTTPNewPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req endpoint.NewPostRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req.Post)
 	return req, err
 }
 

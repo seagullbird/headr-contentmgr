@@ -62,39 +62,47 @@ func (s *grpcServer) NewPost(ctx context.Context, req *pb.CreateNewPostRequest) 
 func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.NewPostRequest)
 	return &pb.CreateNewPostRequest{
-		Title:    req.Title,
-		Summary:  req.Summary,
-		Content:  req.Content,
-		Tags:     req.Tags,
-		Author:   req.Author,
+		Title:    req.Post.FM.Title,
+		Summary:  req.Post.Summary,
+		Content:  req.Post.Content,
+		Tags:     req.Post.FM.Tags,
+		Author:   req.Post.Author,
 		Sitename: req.Sitename,
-		Date:     req.Date,
+		Date:     req.Post.FM.Date,
 	}, nil
 }
 
 func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.CreateNewPostRequest)
 	return endpoint.NewPostRequest{
-		Title:    req.Title,
-		Summary:  req.Summary,
-		Content:  req.Content,
-		Tags:     req.Tags,
-		Author:   req.Author,
-		Sitename: req.Sitename,
-		Date:     req.Date,
+		Post: service.Post{
+			Author:   req.Author,
+			Sitename: req.Sitename,
+			Filename: req.Title,
+			Filetype: "md",
+			FM: service.FrontMatter{
+				Title: req.Title,
+				Date:  req.Date,
+				Draft: false,
+				Tags:  req.Tags,
+			},
+			Summary: req.Summary,
+			Content: req.Content,
+		},
 	}, nil
 }
 
 func encodeGRPCNewPostResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.NewPostResponse)
 	return &pb.CreateNewPostReply{
+		Id:  resp.Id,
 		Err: err2str(resp.Err),
 	}, nil
 }
 
 func decodeGRPCNewPostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.CreateNewPostReply)
-	return endpoint.NewPostResponse{Err: str2err(reply.Err)}, nil
+	return endpoint.NewPostResponse{Id: reply.Id, Err: str2err(reply.Err)}, nil
 }
 
 func err2str(err error) string {

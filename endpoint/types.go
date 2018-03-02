@@ -1,15 +1,12 @@
 package endpoint
 
+import "github.com/seagullbird/headr-contentmgr/service"
+
 type NewPostRequest struct {
-	Author   string   `json:"author"`
-	Sitename string   `json:"sitename"`
-	Title    string   `json:"title"`
-	Date     string   `json:"date"`
-	Tags     []string `json:"tags"`
-	Summary  string   `json:"summary"`
-	Content  string   `json:"content"`
+	service.Post
 }
 
 type NewPostResponse struct {
-	Err error `json:"-"`
+	Id  string `json:"id"`
+	Err error  `json:"-"`
 }

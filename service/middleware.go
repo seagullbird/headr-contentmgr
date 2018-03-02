@@ -23,8 +23,8 @@ type loggingMiddleware struct {
 	next   Service
 }
 
-func (mw loggingMiddleware) NewPost(ctx context.Context, post Post) (err error) {
-	err = mw.next.NewPost(ctx, post)
-	mw.logger.Log("method", "NewPost", "author", post.Author, "sitename", post.Sitename, "title", post.FM.Title, "date", post.FM.Date, "err", err)
+func (mw loggingMiddleware) NewPost(ctx context.Context, post Post) (id string, err error) {
+	id, err = mw.next.NewPost(ctx, post)
+	mw.logger.Log("method", "NewPost", "id", id, "author", post.Author, "sitename", post.Sitename, "title", post.FM.Title, "date", post.FM.Date, "err", err)
 	return
 }
