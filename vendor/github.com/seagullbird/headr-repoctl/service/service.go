@@ -17,7 +17,7 @@ type Service interface {
 	NewSite(ctx context.Context, email, sitename string) error
 	DeleteSite(ctx context.Context, email, sitename string) error
 	NewPost(ctx context.Context, author, sitename, filename, content string) error
-	DeletePost(ctx context.Context, author, sitename, filename string) error
+	RemovePost(ctx context.Context, author, sitename, filename string) error
 }
 
 func New(dispatcher dispatch.Dispatcher, logger log.Logger) Service {
@@ -88,7 +88,7 @@ func (s basicService) NewPost(ctx context.Context, author, sitename, filename, c
 	return s.dispatcher.DispatchMessage("re_generate", evt)
 }
 
-func (s basicService) DeletePost(ctx context.Context, author, sitename, filename string) error {
+func (s basicService) RemovePost(ctx context.Context, author, sitename, filename string) error {
 	postPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts", filename)
 	if _, err := os.Stat(postPath); err != nil {
 		if os.IsNotExist(err) {

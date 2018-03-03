@@ -40,8 +40,8 @@ func (mw loggingMiddleware) NewPost(ctx context.Context, author, sitename, filen
 	return
 }
 
-func (mw loggingMiddleware) DeletePost(ctx context.Context, author, sitename, filename string) (err error) {
-	err = mw.next.DeletePost(ctx, author, sitename, filename)
+func (mw loggingMiddleware) RemovePost(ctx context.Context, author, sitename, filename string) (err error) {
+	err = mw.next.RemovePost(ctx, author, sitename, filename)
 	mw.logger.Log("method", "DeletePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
 	return
 }

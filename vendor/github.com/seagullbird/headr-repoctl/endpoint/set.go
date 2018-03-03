@@ -11,7 +11,7 @@ type Set struct {
 	NewSiteEndpoint    endpoint.Endpoint
 	DeleteSiteEndpoint endpoint.Endpoint
 	NewPostEndpoint    endpoint.Endpoint
-	DeletePostEndpoint endpoint.Endpoint
+	RemovePostEndpoint endpoint.Endpoint
 }
 
 func New(svc service.Service, logger log.Logger) Set {
@@ -30,16 +30,16 @@ func New(svc service.Service, logger log.Logger) Set {
 		newpostEndpoint = MakeNewPostEndpoint(svc)
 		newpostEndpoint = LoggingMiddleware(logger)(newpostEndpoint)
 	}
-	var deletepostEndpoint endpoint.Endpoint
+	var removepostEndpoint endpoint.Endpoint
 	{
-		deletepostEndpoint = MakeDeletePostEndpoint(svc)
-		deletepostEndpoint = LoggingMiddleware(logger)(deletepostEndpoint)
+		removepostEndpoint = MakeRemovePostEndpoint(svc)
+		removepostEndpoint = LoggingMiddleware(logger)(removepostEndpoint)
 	}
 	return Set{
 		NewSiteEndpoint:    newsiteEndpoint,
 		DeleteSiteEndpoint: deletesiteEndpoint,
 		NewPostEndpoint:    newpostEndpoint,
-		DeletePostEndpoint: deletepostEndpoint,
+		RemovePostEndpoint: removepostEndpoint,
 	}
 }
 
@@ -75,8 +75,8 @@ func (s Set) NewPost(ctx context.Context, author, sitename, filename, content st
 	return response.Err
 }
 
-func (s Set) DeletePost(ctx context.Context, author, sitename, filename string) error {
-	resp, err := s.DeletePostEndpoint(ctx, DeletePostRequest{
+func (s Set) RemovePost(ctx context.Context, author, sitename, filename string) error {
+	resp, err := s.RemovePostEndpoint(ctx, RemovePostRequest{
 		Author:   author,
 		Sitename: sitename,
 		Filename: filename,
@@ -84,7 +84,7 @@ func (s Set) DeletePost(ctx context.Context, author, sitename, filename string) 
 	if err != nil {
 		return err
 	}
-	response := resp.(DeletePostResponse)
+	response := resp.(RemovePostResponse)
 	return response.Err
 }
 
@@ -112,10 +112,10 @@ func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 	}
 }
 
-func MakeDeletePostEndpoint(svc service.Service) endpoint.Endpoint {
+func MakeRemovePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(DeletePostRequest)
-		err = svc.DeletePost(ctx, req.Author, req.Sitename, req.Filename)
-		return DeletePostResponse{Err: err}, err
+		req := request.(RemovePostRequest)
+		err = svc.RemovePost(ctx, req.Author, req.Sitename, req.Filename)
+		return RemovePostResponse{Err: err}, err
 	}
 }
