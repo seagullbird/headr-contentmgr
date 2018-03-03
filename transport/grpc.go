@@ -6,10 +6,12 @@ import (
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
+	"github.com/seagullbird/headr-contentmgr/db"
 	"github.com/seagullbird/headr-contentmgr/endpoint"
 	"github.com/seagullbird/headr-contentmgr/pb"
 	"github.com/seagullbird/headr-contentmgr/service"
 	"google.golang.org/grpc"
+	"strings"
 )
 
 type grpcServer struct {
@@ -62,32 +64,30 @@ func (s *grpcServer) NewPost(ctx context.Context, req *pb.CreateNewPostRequest) 
 func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.NewPostRequest)
 	return &pb.CreateNewPostRequest{
-		Title:    req.Post.FM.Title,
+		Title:    req.Post.Title,
 		Summary:  req.Post.Summary,
 		Content:  req.Post.Content,
-		Tags:     req.Post.FM.Tags,
+		Tags:     strings.Split(req.Post.Tags, " "),
 		Author:   req.Post.Author,
 		Sitename: req.Sitename,
-		Date:     req.Post.FM.Date,
+		Date:     req.Post.Date,
 	}, nil
 }
 
 func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.CreateNewPostRequest)
 	return endpoint.NewPostRequest{
-		Post: service.Post{
+		Post: db.Post{
 			Author:   req.Author,
 			Sitename: req.Sitename,
 			Filename: req.Title,
 			Filetype: "md",
-			FM: service.FrontMatter{
-				Title: req.Title,
-				Date:  req.Date,
-				Draft: false,
-				Tags:  req.Tags,
-			},
-			Summary: req.Summary,
-			Content: req.Content,
+			Title:    req.Title,
+			Date:     req.Date,
+			Draft:    false,
+			Tags:     strings.Join(req.Tags, " "),
+			Summary:  req.Summary,
+			Content:  req.Content,
 		},
 	}, nil
 }

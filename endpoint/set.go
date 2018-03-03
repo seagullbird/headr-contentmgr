@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
+	"github.com/seagullbird/headr-contentmgr/db"
 	"github.com/seagullbird/headr-contentmgr/service"
 )
 
@@ -22,7 +23,7 @@ func New(svc service.Service, logger log.Logger) Set {
 	}
 }
 
-func (s Set) NewPost(ctx context.Context, post service.Post) (uint, error) {
+func (s Set) NewPost(ctx context.Context, post db.Post) (uint, error) {
 	resp, err := s.NewPostEndpoint(ctx, NewPostRequest{Post: post})
 	if err != nil {
 		return 0, err

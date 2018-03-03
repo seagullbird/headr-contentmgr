@@ -1,9 +1,9 @@
 package endpoint
 
-import "github.com/seagullbird/headr-contentmgr/service"
+import "github.com/seagullbird/headr-contentmgr/db"
 
 type NewPostRequest struct {
-	service.Post
+	db.Post
 }
 
 type NewPostResponse struct {

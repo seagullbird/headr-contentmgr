@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/go-kit/kit/log"
+	"github.com/seagullbird/headr-contentmgr/db"
 )
 
 // Middleware describes a service (as opposed to endpoint) middleware.
@@ -23,8 +24,8 @@ type loggingMiddleware struct {
 	next   Service
 }
 
-func (mw loggingMiddleware) NewPost(ctx context.Context, post Post) (id uint, err error) {
+func (mw loggingMiddleware) NewPost(ctx context.Context, post db.Post) (id uint, err error) {
 	id, err = mw.next.NewPost(ctx, post)
-	mw.logger.Log("method", "NewPost", "id", id, "author", post.Author, "sitename", post.Sitename, "title", post.FM.Title, "date", post.FM.Date, "err", err)
+	mw.logger.Log("method", "NewPost", "id", id, "author", post.Author, "sitename", post.Sitename, "title", post.Title, "date", post.Date, "err", err)
 	return
 }

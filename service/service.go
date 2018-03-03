@@ -8,7 +8,7 @@ import (
 )
 
 type Service interface {
-	NewPost(ctx context.Context, post Post) (uint, error)
+	NewPost(ctx context.Context, post db.Post) (uint, error)
 }
 
 func New(repoctlsvc repoctlservice.Service, store db.Store, logger log.Logger) Service {
@@ -32,8 +32,8 @@ func NewBasicService(repoctlsvc repoctlservice.Service, store db.Store) basicSer
 	}
 }
 
-func (s basicService) NewPost(ctx context.Context, post Post) (uint, error) {
-	id, err := s.store.InsertPost(post.Model())
+func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
+	id, err := s.store.InsertPost(&post)
 	if err != nil {
 		return 0, err
 	}
