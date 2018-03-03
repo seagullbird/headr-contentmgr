@@ -40,7 +40,7 @@ func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
 	}
 	filename := post.Filename + "." + post.Filetype
 	filecontent := post.String()
-	return id, s.repoctlsvc.NewPost(ctx, post.Author, post.Sitename, filename, filecontent)
+	return id, s.repoctlsvc.WritePost(ctx, post.Author, post.Sitename, filename, filecontent)
 }
 
 func (s basicService) DeletePost(ctx context.Context, id uint) error {

@@ -18,14 +18,14 @@ type DeleteSiteResponse struct {
 	Err error `json:"-"`
 }
 
-type NewPostRequest struct {
+type WritePostRequest struct {
 	Author   string
 	Sitename string
 	Filename string
 	Content  string
 }
 
-type NewPostResponse struct {
+type WritePostResponse struct {
 	Err error `json:"-"`
 }
 
@@ -37,4 +37,15 @@ type RemovePostRequest struct {
 
 type RemovePostResponse struct {
 	Err error `json:"-"`
+}
+
+type ReadPostRequest struct {
+	Author   string
+	Sitename string
+	Filename string
+}
+
+type ReadPostResponse struct {
+	Content string `json:"content"`
+	Err     error  `json:"-"`
 }

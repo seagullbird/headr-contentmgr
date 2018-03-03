@@ -12,10 +12,12 @@ It has these top-level messages:
 	NewSiteReply
 	DeleteSiteRequest
 	DeleteSiteReply
-	NewPostRequest
-	NewPostReply
+	WritePostRequest
+	WritePostReply
 	RemovePostRequest
 	RemovePostReply
+	ReadPostRequest
+	ReadPostReply
 */
 package pb
 
@@ -119,56 +121,56 @@ func (m *DeleteSiteReply) GetErr() string {
 	return ""
 }
 
-type NewPostRequest struct {
+type WritePostRequest struct {
 	Author   string `protobuf:"bytes,1,opt,name=author" json:"author,omitempty"`
 	Sitename string `protobuf:"bytes,2,opt,name=sitename" json:"sitename,omitempty"`
 	Filename string `protobuf:"bytes,3,opt,name=filename" json:"filename,omitempty"`
 	Content  string `protobuf:"bytes,4,opt,name=content" json:"content,omitempty"`
 }
 
-func (m *NewPostRequest) Reset()                    { *m = NewPostRequest{} }
-func (m *NewPostRequest) String() string            { return proto.CompactTextString(m) }
-func (*NewPostRequest) ProtoMessage()               {}
-func (*NewPostRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
+func (m *WritePostRequest) Reset()                    { *m = WritePostRequest{} }
+func (m *WritePostRequest) String() string            { return proto.CompactTextString(m) }
+func (*WritePostRequest) ProtoMessage()               {}
+func (*WritePostRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{4} }
 
-func (m *NewPostRequest) GetAuthor() string {
+func (m *WritePostRequest) GetAuthor() string {
 	if m != nil {
 		return m.Author
 	}
 	return ""
 }
 
-func (m *NewPostRequest) GetSitename() string {
+func (m *WritePostRequest) GetSitename() string {
 	if m != nil {
 		return m.Sitename
 	}
 	return ""
 }
 
-func (m *NewPostRequest) GetFilename() string {
+func (m *WritePostRequest) GetFilename() string {
 	if m != nil {
 		return m.Filename
 	}
 	return ""
 }
 
-func (m *NewPostRequest) GetContent() string {
+func (m *WritePostRequest) GetContent() string {
 	if m != nil {
 		return m.Content
 	}
 	return ""
 }
 
-type NewPostReply struct {
+type WritePostReply struct {
 	Err string `protobuf:"bytes,1,opt,name=err" json:"err,omitempty"`
 }
 
-func (m *NewPostReply) Reset()                    { *m = NewPostReply{} }
-func (m *NewPostReply) String() string            { return proto.CompactTextString(m) }
-func (*NewPostReply) ProtoMessage()               {}
-func (*NewPostReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
+func (m *WritePostReply) Reset()                    { *m = WritePostReply{} }
+func (m *WritePostReply) String() string            { return proto.CompactTextString(m) }
+func (*WritePostReply) ProtoMessage()               {}
+func (*WritePostReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{5} }
 
-func (m *NewPostReply) GetErr() string {
+func (m *WritePostReply) GetErr() string {
 	if m != nil {
 		return m.Err
 	}
@@ -223,15 +225,73 @@ func (m *RemovePostReply) GetErr() string {
 	return ""
 }
 
+type ReadPostRequest struct {
+	Author   string `protobuf:"bytes,1,opt,name=author" json:"author,omitempty"`
+	Sitename string `protobuf:"bytes,2,opt,name=sitename" json:"sitename,omitempty"`
+	Filename string `protobuf:"bytes,3,opt,name=filename" json:"filename,omitempty"`
+}
+
+func (m *ReadPostRequest) Reset()                    { *m = ReadPostRequest{} }
+func (m *ReadPostRequest) String() string            { return proto.CompactTextString(m) }
+func (*ReadPostRequest) ProtoMessage()               {}
+func (*ReadPostRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *ReadPostRequest) GetAuthor() string {
+	if m != nil {
+		return m.Author
+	}
+	return ""
+}
+
+func (m *ReadPostRequest) GetSitename() string {
+	if m != nil {
+		return m.Sitename
+	}
+	return ""
+}
+
+func (m *ReadPostRequest) GetFilename() string {
+	if m != nil {
+		return m.Filename
+	}
+	return ""
+}
+
+type ReadPostReply struct {
+	Content string `protobuf:"bytes,1,opt,name=content" json:"content,omitempty"`
+	Err     string `protobuf:"bytes,2,opt,name=err" json:"err,omitempty"`
+}
+
+func (m *ReadPostReply) Reset()                    { *m = ReadPostReply{} }
+func (m *ReadPostReply) String() string            { return proto.CompactTextString(m) }
+func (*ReadPostReply) ProtoMessage()               {}
+func (*ReadPostReply) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+
+func (m *ReadPostReply) GetContent() string {
+	if m != nil {
+		return m.Content
+	}
+	return ""
+}
+
+func (m *ReadPostReply) GetErr() string {
+	if m != nil {
+		return m.Err
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*NewSiteRequest)(nil), "pb.NewSiteRequest")
 	proto.RegisterType((*NewSiteReply)(nil), "pb.NewSiteReply")
 	proto.RegisterType((*DeleteSiteRequest)(nil), "pb.DeleteSiteRequest")
 	proto.RegisterType((*DeleteSiteReply)(nil), "pb.DeleteSiteReply")
-	proto.RegisterType((*NewPostRequest)(nil), "pb.NewPostRequest")
-	proto.RegisterType((*NewPostReply)(nil), "pb.NewPostReply")
+	proto.RegisterType((*WritePostRequest)(nil), "pb.WritePostRequest")
+	proto.RegisterType((*WritePostReply)(nil), "pb.WritePostReply")
 	proto.RegisterType((*RemovePostRequest)(nil), "pb.RemovePostRequest")
 	proto.RegisterType((*RemovePostReply)(nil), "pb.RemovePostReply")
+	proto.RegisterType((*ReadPostRequest)(nil), "pb.ReadPostRequest")
+	proto.RegisterType((*ReadPostReply)(nil), "pb.ReadPostReply")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -247,8 +307,9 @@ const _ = grpc.SupportPackageIsVersion4
 type RepoctlClient interface {
 	NewSite(ctx context.Context, in *NewSiteRequest, opts ...grpc.CallOption) (*NewSiteReply, error)
 	DeleteSite(ctx context.Context, in *DeleteSiteRequest, opts ...grpc.CallOption) (*DeleteSiteReply, error)
-	NewPost(ctx context.Context, in *NewPostRequest, opts ...grpc.CallOption) (*NewPostReply, error)
+	WritePost(ctx context.Context, in *WritePostRequest, opts ...grpc.CallOption) (*WritePostReply, error)
 	RemovePost(ctx context.Context, in *RemovePostRequest, opts ...grpc.CallOption) (*RemovePostReply, error)
+	ReadPost(ctx context.Context, in *ReadPostRequest, opts ...grpc.CallOption) (*ReadPostReply, error)
 }
 
 type repoctlClient struct {
@@ -277,9 +338,9 @@ func (c *repoctlClient) DeleteSite(ctx context.Context, in *DeleteSiteRequest, o
 	return out, nil
 }
 
-func (c *repoctlClient) NewPost(ctx context.Context, in *NewPostRequest, opts ...grpc.CallOption) (*NewPostReply, error) {
-	out := new(NewPostReply)
-	err := grpc.Invoke(ctx, "/pb.Repoctl/NewPost", in, out, c.cc, opts...)
+func (c *repoctlClient) WritePost(ctx context.Context, in *WritePostRequest, opts ...grpc.CallOption) (*WritePostReply, error) {
+	out := new(WritePostReply)
+	err := grpc.Invoke(ctx, "/pb.Repoctl/WritePost", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -295,13 +356,23 @@ func (c *repoctlClient) RemovePost(ctx context.Context, in *RemovePostRequest, o
 	return out, nil
 }
 
+func (c *repoctlClient) ReadPost(ctx context.Context, in *ReadPostRequest, opts ...grpc.CallOption) (*ReadPostReply, error) {
+	out := new(ReadPostReply)
+	err := grpc.Invoke(ctx, "/pb.Repoctl/ReadPost", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Repoctl service
 
 type RepoctlServer interface {
 	NewSite(context.Context, *NewSiteRequest) (*NewSiteReply, error)
 	DeleteSite(context.Context, *DeleteSiteRequest) (*DeleteSiteReply, error)
-	NewPost(context.Context, *NewPostRequest) (*NewPostReply, error)
+	WritePost(context.Context, *WritePostRequest) (*WritePostReply, error)
 	RemovePost(context.Context, *RemovePostRequest) (*RemovePostReply, error)
+	ReadPost(context.Context, *ReadPostRequest) (*ReadPostReply, error)
 }
 
 func RegisterRepoctlServer(s *grpc.Server, srv RepoctlServer) {
@@ -344,20 +415,20 @@ func _Repoctl_DeleteSite_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Repoctl_NewPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewPostRequest)
+func _Repoctl_WritePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WritePostRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(RepoctlServer).NewPost(ctx, in)
+		return srv.(RepoctlServer).WritePost(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/pb.Repoctl/NewPost",
+		FullMethod: "/pb.Repoctl/WritePost",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RepoctlServer).NewPost(ctx, req.(*NewPostRequest))
+		return srv.(RepoctlServer).WritePost(ctx, req.(*WritePostRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -380,6 +451,24 @@ func _Repoctl_RemovePost_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Repoctl_ReadPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RepoctlServer).ReadPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.Repoctl/ReadPost",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RepoctlServer).ReadPost(ctx, req.(*ReadPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Repoctl_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "pb.Repoctl",
 	HandlerType: (*RepoctlServer)(nil),
@@ -393,12 +482,16 @@ var _Repoctl_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Repoctl_DeleteSite_Handler,
 		},
 		{
-			MethodName: "NewPost",
-			Handler:    _Repoctl_NewPost_Handler,
+			MethodName: "WritePost",
+			Handler:    _Repoctl_WritePost_Handler,
 		},
 		{
 			MethodName: "RemovePost",
 			Handler:    _Repoctl_RemovePost_Handler,
+		},
+		{
+			MethodName: "ReadPost",
+			Handler:    _Repoctl_ReadPost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -408,24 +501,27 @@ var _Repoctl_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("repoctlsvc.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 294 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x92, 0xcf, 0x4e, 0x83, 0x40,
-	0x10, 0xc6, 0x4b, 0xab, 0x45, 0x27, 0x46, 0xe9, 0xf8, 0x27, 0x84, 0x53, 0x83, 0x17, 0x4f, 0x24,
-	0xea, 0xcd, 0xa3, 0xd1, 0xab, 0x31, 0xf8, 0x04, 0x40, 0xc6, 0x48, 0xb2, 0xb0, 0x2b, 0x4c, 0x6b,
-	0xea, 0x0b, 0xfb, 0x1a, 0x06, 0x06, 0x28, 0x6d, 0x89, 0x17, 0xd3, 0x1b, 0x1f, 0xdf, 0xee, 0xfe,
-	0xbe, 0xf9, 0x03, 0x4e, 0x41, 0x46, 0x27, 0xac, 0xca, 0x65, 0x12, 0x98, 0x42, 0xb3, 0xc6, 0xb1,
-	0x89, 0xfd, 0x47, 0x38, 0x7d, 0xa1, 0xaf, 0xb7, 0x94, 0x29, 0xa4, 0xcf, 0x05, 0x95, 0x8c, 0x17,
-	0x70, 0x48, 0x59, 0x94, 0x2a, 0xd7, 0x9a, 0x5b, 0x37, 0xc7, 0xa1, 0x08, 0xf4, 0xe0, 0xa8, 0x4c,
-	0x99, 0xf2, 0x28, 0x23, 0x77, 0x5c, 0x1b, 0x9d, 0xf6, 0xe7, 0x70, 0xd2, 0xbd, 0x61, 0xd4, 0x0a,
-	0x1d, 0x98, 0x50, 0x51, 0x34, 0xf7, 0xab, 0x4f, 0xff, 0x19, 0x66, 0x4f, 0xa4, 0x88, 0xe9, 0x7f,
-	0xa0, 0x6b, 0x38, 0xeb, 0x3f, 0x33, 0xcc, 0xfa, 0xae, 0x2b, 0x7a, 0xd5, 0x25, 0xb7, 0xa0, 0x2b,
-	0x98, 0x46, 0x0b, 0xfe, 0xd0, 0xed, 0xb1, 0x46, 0xfd, 0x85, 0xaa, 0xbc, 0xf7, 0x54, 0x89, 0x37,
-	0x11, 0xaf, 0xd5, 0xe8, 0x82, 0x9d, 0xe8, 0x9c, 0x29, 0x67, 0xf7, 0xa0, 0xb6, 0x5a, 0xd9, 0x74,
-	0x42, 0xd8, 0xc3, 0xe9, 0x12, 0x98, 0x85, 0x94, 0xe9, 0x25, 0xed, 0x31, 0x60, 0xd5, 0xa7, 0x3e,
-	0x64, 0x30, 0xc9, 0xdd, 0x8f, 0x05, 0x76, 0x28, 0x2b, 0x81, 0xb7, 0x60, 0x37, 0x13, 0x44, 0x0c,
-	0x4c, 0x1c, 0x6c, 0xae, 0x84, 0xe7, 0x6c, 0xfc, 0x33, 0x6a, 0xe5, 0x8f, 0xf0, 0x01, 0x60, 0x3d,
-	0x0b, 0xbc, 0xac, 0x4e, 0xec, 0x8c, 0xd8, 0x3b, 0xdf, 0xfe, 0x2d, 0x77, 0x05, 0x57, 0x85, 0xeb,
-	0x70, 0xbd, 0x76, 0x74, 0xb8, 0x2e, 0xbd, 0xe0, 0xd6, 0x25, 0x09, 0x6e, 0xa7, 0x8f, 0x82, 0xdb,
-	0xaa, 0xdc, 0x1f, 0xc5, 0xd3, 0x7a, 0xdd, 0xef, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xe8, 0x7d,
-	0x91, 0x50, 0x02, 0x03, 0x00, 0x00,
+	// 341 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x93, 0x4b, 0x4b, 0xc3, 0x40,
+	0x10, 0xc7, 0xdb, 0x54, 0xfb, 0x18, 0xb4, 0xa6, 0x63, 0x95, 0x90, 0x53, 0x59, 0x2f, 0x9e, 0x0a,
+	0x3e, 0x40, 0xd0, 0x9b, 0xe8, 0x55, 0x24, 0x1e, 0x3c, 0xa7, 0x71, 0xc4, 0xc0, 0xb6, 0xbb, 0x26,
+	0xdb, 0x4a, 0xc1, 0x6f, 0xe3, 0x17, 0x95, 0xcd, 0x66, 0xd3, 0x24, 0x0d, 0x5e, 0xa4, 0xb7, 0xcc,
+	0x6b, 0x7f, 0x7f, 0x66, 0xfe, 0x01, 0x37, 0x21, 0x29, 0x22, 0xc5, 0xd3, 0x55, 0x34, 0x95, 0x89,
+	0x50, 0x02, 0x1d, 0x39, 0x63, 0xf7, 0x30, 0x7c, 0xa2, 0xaf, 0x97, 0x58, 0x51, 0x40, 0x9f, 0x4b,
+	0x4a, 0x15, 0x8e, 0x61, 0x9f, 0xe6, 0x61, 0xcc, 0xbd, 0xf6, 0xa4, 0x7d, 0x3e, 0x08, 0x4c, 0x80,
+	0x3e, 0xf4, 0xd3, 0x58, 0xd1, 0x22, 0x9c, 0x93, 0xe7, 0x64, 0x85, 0x22, 0x66, 0x13, 0x38, 0x28,
+	0xde, 0x90, 0x7c, 0x8d, 0x2e, 0x74, 0x28, 0x49, 0xf2, 0x79, 0xfd, 0xc9, 0x1e, 0x61, 0xf4, 0x40,
+	0x9c, 0x14, 0xfd, 0x0f, 0x74, 0x06, 0x47, 0xe5, 0x67, 0x9a, 0x59, 0xdf, 0xe0, 0xbe, 0x26, 0xb1,
+	0xa2, 0x67, 0x91, 0x2a, 0x8b, 0x3a, 0x85, 0x6e, 0xb8, 0x54, 0x1f, 0xc2, 0x36, 0xe6, 0xd1, 0x5f,
+	0x30, 0x5d, 0x7b, 0x8f, 0xb9, 0xa9, 0x75, 0x4c, 0xcd, 0xc6, 0xe8, 0x41, 0x2f, 0x12, 0x0b, 0x45,
+	0x0b, 0xe5, 0xed, 0x65, 0x25, 0x1b, 0x32, 0x06, 0xc3, 0x12, 0xbd, 0x59, 0x61, 0x04, 0xa3, 0x80,
+	0xe6, 0x62, 0xb5, 0x4b, 0x89, 0x7a, 0x57, 0x65, 0x48, 0xb3, 0x92, 0x50, 0x37, 0x85, 0x6f, 0xbb,
+	0xd4, 0x71, 0x07, 0x87, 0x1b, 0x84, 0x56, 0x51, 0xda, 0x5d, 0xbb, 0xb2, 0x3b, 0xab, 0xcf, 0x29,
+	0xf4, 0x5d, 0xfe, 0x38, 0xd0, 0x0b, 0x8c, 0x6d, 0xf1, 0x02, 0x7a, 0xb9, 0xcb, 0x10, 0xa7, 0x72,
+	0x36, 0xad, 0xda, 0xd6, 0x77, 0x2b, 0x39, 0xc9, 0xd7, 0xac, 0x85, 0xb7, 0x00, 0x1b, 0xbf, 0xe0,
+	0x89, 0xee, 0xd8, 0xb2, 0xa1, 0x7f, 0x5c, 0x4f, 0x9b, 0xd9, 0x1b, 0x18, 0x14, 0x87, 0xc4, 0xb1,
+	0xee, 0xa9, 0xbb, 0xca, 0xc7, 0x5a, 0xb6, 0x80, 0x6e, 0x16, 0x6f, 0xa0, 0x5b, 0xd7, 0x36, 0xd0,
+	0xda, 0x7d, 0x58, 0x0b, 0xaf, 0xa1, 0x6f, 0x97, 0x85, 0x79, 0x4b, 0xe5, 0x3a, 0xfe, 0xa8, 0x9a,
+	0xcc, 0xa6, 0x66, 0xdd, 0xec, 0x77, 0xbe, 0xfa, 0x0d, 0x00, 0x00, 0xff, 0xff, 0x67, 0x49, 0x52,
+	0xa2, 0xe2, 0x03, 0x00, 0x00,
 }

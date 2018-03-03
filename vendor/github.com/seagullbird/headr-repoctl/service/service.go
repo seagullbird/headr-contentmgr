@@ -16,8 +16,9 @@ import (
 type Service interface {
 	NewSite(ctx context.Context, email, sitename string) error
 	DeleteSite(ctx context.Context, email, sitename string) error
-	NewPost(ctx context.Context, author, sitename, filename, content string) error
+	WritePost(ctx context.Context, author, sitename, filename, content string) error
 	RemovePost(ctx context.Context, author, sitename, filename string) error
+	ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error)
 }
 
 func New(dispatcher dispatch.Dispatcher, logger log.Logger) Service {
@@ -65,7 +66,7 @@ func (s basicService) DeleteSite(ctx context.Context, email, sitename string) er
 	return nil
 }
 
-func (s basicService) NewPost(ctx context.Context, author, sitename, filename, content string) error {
+func (s basicService) WritePost(ctx context.Context, author, sitename, filename, content string) error {
 	postsPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts")
 	if _, err := os.Stat(postsPath); err != nil {
 		if os.IsNotExist(err) {
@@ -99,4 +100,19 @@ func (s basicService) RemovePost(ctx context.Context, author, sitename, filename
 	cmd := exec.Command("rm", postPath)
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func (s basicService) ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error) {
+	postPath := filepath.Join(config.SITESDIR, author, sitename, "source", "content", "posts", filename)
+	if _, err := os.Stat(postPath); err != nil {
+		if os.IsNotExist(err) {
+			return "", MakeErrPathNotExist(postPath)
+		}
+		return "", MakeErrUnexpected(err)
+	}
+	contentRaw, err := ioutil.ReadFile(postPath)
+	if err != nil {
+		return "", MakeErrUnexpected(err)
+	}
+	return string(contentRaw), nil
 }

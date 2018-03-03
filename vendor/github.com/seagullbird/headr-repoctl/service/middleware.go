@@ -34,14 +34,20 @@ func (mw loggingMiddleware) DeleteSite(ctx context.Context, email, sitename stri
 	return
 }
 
-func (mw loggingMiddleware) NewPost(ctx context.Context, author, sitename, filename, content string) (err error) {
-	err = mw.next.NewPost(ctx, author, sitename, filename, content)
-	mw.logger.Log("method", "NewPost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+func (mw loggingMiddleware) WritePost(ctx context.Context, author, sitename, filename, content string) (err error) {
+	err = mw.next.WritePost(ctx, author, sitename, filename, content)
+	mw.logger.Log("method", "WritePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
 	return
 }
 
 func (mw loggingMiddleware) RemovePost(ctx context.Context, author, sitename, filename string) (err error) {
 	err = mw.next.RemovePost(ctx, author, sitename, filename)
 	mw.logger.Log("method", "DeletePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+	return
+}
+
+func (mw loggingMiddleware) ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error) {
+	content, err = mw.next.ReadPost(ctx, author, sitename, filename)
+	mw.logger.Log("method", "ReadPost", "author", author, "sitename", sitename, "filename", filename, "err", err)
 	return
 }
