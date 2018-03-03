@@ -29,3 +29,9 @@ func (mw loggingMiddleware) NewPost(ctx context.Context, post db.Post) (id uint,
 	mw.logger.Log("method", "NewPost", "id", id, "author", post.Author, "sitename", post.Sitename, "title", post.Title, "date", post.Date, "err", err)
 	return
 }
+
+func (mw loggingMiddleware) DeletePost(ctx context.Context, id uint) error {
+	err := mw.next.DeletePost(ctx, id)
+	mw.logger.Log("method", "DeletePost", "id", id, "err", err)
+	return err
+}

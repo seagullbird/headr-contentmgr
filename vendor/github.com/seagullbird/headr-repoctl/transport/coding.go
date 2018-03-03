@@ -92,6 +92,37 @@ func decodeGRPCNewPostResponse(_ context.Context, grpcReply interface{}) (interf
 	return endpoint.NewPostResponse{Err: str2err(reply.Err)}, nil
 }
 
+// DeletePost
+func encodeGRPCDeletePostRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(endpoint.DeletePostRequest)
+	return &pb.DeletePostRequest{
+		Author:   req.Author,
+		Sitename: req.Sitename,
+		Filename: req.Filename,
+	}, nil
+}
+
+func decodeGRPCDeletePostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.DeletePostRequest)
+	return endpoint.DeletePostRequest{
+		Author:   req.Author,
+		Sitename: req.Sitename,
+		Filename: req.Filename,
+	}, nil
+}
+
+func encodeGRPCDeletePostResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(endpoint.DeletePostResponse)
+	return &pb.DeletePostReply{
+		Err: err2str(resp.Err),
+	}, nil
+}
+
+func decodeGRPCDeletePostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.DeletePostReply)
+	return endpoint.DeletePostResponse{Err: str2err(reply.Err)}, nil
+}
+
 func err2str(err error) string {
 	if err == nil {
 		return ""

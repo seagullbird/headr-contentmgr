@@ -71,13 +71,13 @@
   branch = "master"
   name = "github.com/seagullbird/headr-common"
   packages = ["mq","mq/dispatch"]
-  revision = "20a148fb2a9b7f446cb6d2637ec489b6f460c130"
+  revision = "05dc26f6f33f5b257d4c501526eea862b53bec27"
 
 [[projects]]
   branch = "master"
   name = "github.com/seagullbird/headr-repoctl"
   packages = ["config","endpoint","pb","service","transport"]
-  revision = "1727fa89dfb38ff884d0b4de3891bbda346311e0"
+  revision = "9071579eb915dac4de9db86bd7ea0286888ea6b0"
 
 [[projects]]
   branch = "master"

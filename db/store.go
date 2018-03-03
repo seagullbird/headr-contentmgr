@@ -8,8 +8,8 @@ import (
 
 type Store interface {
 	InsertPost(post *Post) (id uint, err error)
-	DeletePost(id string) error
-	GetPost(id string) error
+	DeletePost(post *Post) error
+	GetPost(id uint) (*Post, error)
 	PatchPost(post *Post) error
 }
 
@@ -33,12 +33,15 @@ func (s *databaseStore) InsertPost(post *Post) (id uint, err error) {
 	return post.Model.ID, nil
 }
 
-func (s *databaseStore) DeletePost(id string) error {
+func (s *databaseStore) DeletePost(post *Post) error {
+	s.db.Delete(&post)
 	return nil
 }
 
-func (s *databaseStore) GetPost(id string) error {
-	return nil
+func (s *databaseStore) GetPost(id uint) (*Post, error) {
+	var post Post
+	s.db.First(&post, id)
+	return &post, nil
 }
 
 func (s *databaseStore) PatchPost(post *Post) error {

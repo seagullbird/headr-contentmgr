@@ -7,6 +7,7 @@ service Repoctl {
     rpc NewSite (NewSiteRequest) returns (NewSiteReply) {}
     rpc DeleteSite (DeleteSiteRequest) returns (DeleteSiteReply) {}
     rpc NewPost (NewPostRequest) returns (NewPostReply) {}
+    rpc DeletePost (DeletePostRequest) returns (DeletePostReply) {}
 }
 
 message NewSiteRequest {
@@ -37,3 +38,14 @@ message NewPostRequest {
 message NewPostReply {
     string err = 1;
 }
+
+message DeletePostRequest {
+    string author = 1;
+    string sitename = 2;
+    string filename = 3;
+}
+
+message DeletePostReply {
+    string err = 1;
+}
+

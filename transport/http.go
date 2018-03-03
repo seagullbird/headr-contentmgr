@@ -26,6 +26,12 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 		encodeHTTPGenericResponse,
 		options...,
 	))
+	r.Methods("DELETE").Path("/posts/").Handler(httptransport.NewServer(
+		endpoints.DeletePostEndpoint,
+		decodeHTTPDeletePostRequest,
+		encodeHTTPGenericResponse,
+		options...,
+	))
 	return r
 }
 
@@ -45,6 +51,12 @@ func errorEncoder(_ context.Context, err error, w http.ResponseWriter) {
 func decodeHTTPNewPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var req endpoint.NewPostRequest
 	err := json.NewDecoder(r.Body).Decode(&req.Post)
+	return req, err
+}
+
+func decodeHTTPDeletePostRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var req endpoint.DeletePostRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
 	return req, err
 }
 

@@ -10,3 +10,11 @@ type NewPostResponse struct {
 	Id  uint  `json:"id"`
 	Err error `json:"-"`
 }
+
+type DeletePostRequest struct {
+	Id uint `json:"id"`
+}
+
+type DeletePostResponse struct {
+	Err error `json:"-"`
+}
