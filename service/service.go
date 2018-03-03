@@ -45,7 +45,7 @@ func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
 
 func (s basicService) DeletePost(ctx context.Context, id uint) error {
 	postptr, _ := s.store.GetPost(id)
-	err := s.repoctlsvc.DeletePost(ctx, postptr.Author, postptr.Sitename, postptr.Filename+"."+postptr.Filetype)
+	err := s.repoctlsvc.RemovePost(ctx, postptr.Author, postptr.Sitename, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return err
 	}
