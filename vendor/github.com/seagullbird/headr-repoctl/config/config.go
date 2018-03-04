@@ -3,9 +3,12 @@ package config
 import "path/filepath"
 
 var (
-	PORT         = "unset"
-	DEV          = true
-	DATADIR      = "/data"
-	SITESDIR     = filepath.Join(DATADIR, "sites")
+	// PORT is the serving port, this value is set during compile time
+	PORT = "unset"
+	// DATADIR is the root directory for persistent volume
+	DATADIR = "/data"
+	// SITESDIR contains all user sites
+	SITESDIR = filepath.Join(DATADIR, "sites")
+	// InitialTheme currently is set dead to gohugo-theme-ananke
 	InitialTheme = "gohugo-theme-ananke"
 )

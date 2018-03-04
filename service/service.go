@@ -10,6 +10,7 @@ import (
 type Service interface {
 	NewPost(ctx context.Context, post db.Post) (uint, error)
 	DeletePost(ctx context.Context, id uint) error
+	GetPost(ctx context.Context, id uint) (*db.Post, error)
 }
 
 func New(repoctlsvc repoctlservice.Service, store db.Store, logger log.Logger) Service {
@@ -51,4 +52,14 @@ func (s basicService) DeletePost(ctx context.Context, id uint) error {
 	}
 	s.store.DeletePost(postptr)
 	return nil
+}
+
+func (s basicService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
+	postptr, _ := s.store.GetPost(id)
+	content, err := s.repoctlsvc.ReadPost(ctx, postptr.Author, postptr.Sitename, postptr.Filename+"."+postptr.Filetype)
+	if err != nil {
+		return nil, err
+	}
+	postptr.Content = content
+	return postptr, nil
 }

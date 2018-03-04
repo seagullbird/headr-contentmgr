@@ -19,6 +19,7 @@ type grpcServer struct {
 	readpost   grpctransport.Handler
 }
 
+// NewGRPCServer makes a set of endpoints available as a gRPC RepoctlServer.
 func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.RepoctlServer {
 	options := []grpctransport.ServerOption{
 		grpctransport.ServerErrorLogger(logger),
@@ -57,6 +58,9 @@ func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.RepoctlServer {
 	}
 }
 
+// NewGRPCClient returns an RepoctlService backed by a gRPC server at the other end
+// of the conn. The caller is responsible for constructing the conn, and
+// eventually closing the underlying transport.
 func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 	var newsiteEndpoint kitendpoint.Endpoint
 	{

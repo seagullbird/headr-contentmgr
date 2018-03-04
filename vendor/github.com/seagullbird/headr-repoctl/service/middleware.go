@@ -8,6 +8,8 @@ import (
 // Middleware describes a service (as opposed to endpoint) middleware.
 type Middleware func(Service) Service
 
+// LoggingMiddleware takes a logger as a dependency
+// and returns a ServiceMiddleware.
 func LoggingMiddleware(logger log.Logger) Middleware {
 	return func(next Service) Service {
 		return loggingMiddleware{

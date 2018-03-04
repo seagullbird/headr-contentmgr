@@ -35,3 +35,9 @@ func (mw loggingMiddleware) DeletePost(ctx context.Context, id uint) error {
 	mw.logger.Log("method", "DeletePost", "id", id, "err", err)
 	return err
 }
+
+func (mw loggingMiddleware) GetPost(ctx context.Context, id uint) (*db.Post, error) {
+	postptr, err := mw.next.GetPost(ctx, id)
+	mw.logger.Log("method", "GetPost", "id", id, "err", err)
+	return postptr, err
+}

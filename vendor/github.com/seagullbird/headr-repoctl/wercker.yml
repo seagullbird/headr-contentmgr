@@ -1,0 +1,27 @@
+box:
+  id: golang:1.9
+
+build:
+  steps:
+    - wercker/golint:
+      exclude: vendor
+    - setup-go-workspace:
+        package-dir: github.com/seagullbird/headr-repoctl
+    - script:
+        name: env
+        code: env
+    - script:
+        name: "Setup test environment"
+        code: |
+          if [ -f "$WERCKER_CACHE_DIR/environ.tar.gz" ]; then
+            debug "environ.tar.gz found, unzipping..."
+            tar -C / -xzf $WERCKER_CACHE_DIR/environ.tar.gz
+          else
+            debug "environ.tar.gz not found, creating..."
+            mkdir -p /data/sites
+            tar -czvf $WERCKER_CACHE_DIR/environ.tar.gz /data
+          fi
+    - script:
+        name: go test
+        code: |
+          go test -v ./tests

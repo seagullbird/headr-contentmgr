@@ -11,6 +11,7 @@ import (
 type Set struct {
 	NewPostEndpoint    endpoint.Endpoint
 	DeletePostEndpoint endpoint.Endpoint
+	GetPostEndpoint    endpoint.Endpoint
 }
 
 func New(svc service.Service, logger log.Logger) Set {
@@ -24,9 +25,15 @@ func New(svc service.Service, logger log.Logger) Set {
 		deletePostEndpoint = MakeDeletePostEndpoint(svc)
 		deletePostEndpoint = LoggingMiddleware(logger)(deletePostEndpoint)
 	}
+	var getPostEndpoint endpoint.Endpoint
+	{
+		getPostEndpoint = MakeGetPostEndpoint(svc)
+		getPostEndpoint = LoggingMiddleware(logger)(getPostEndpoint)
+	}
 	return Set{
 		NewPostEndpoint:    newPostEndpoint,
 		DeletePostEndpoint: deletePostEndpoint,
+		GetPostEndpoint:    getPostEndpoint,
 	}
 }
 
@@ -48,6 +55,15 @@ func (s Set) DeletePost(ctx context.Context, id uint) error {
 	return response.Err
 }
 
+func (s Set) GetPost(ctx context.Context, id uint) (*db.Post, error) {
+	resp, err := s.GetPostEndpoint(ctx, GetPostRequest{Id: id})
+	if err != nil {
+		return nil, err
+	}
+	response := resp.(GetPostResponse)
+	return &response.Post, err
+}
+
 func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewPostRequest)
@@ -64,9 +80,18 @@ func MakeDeletePostEndpoint(svc service.Service) endpoint.Endpoint {
 	}
 }
 
+func MakeGetPostEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(GetPostRequest)
+		postptr, err := svc.GetPost(ctx, req.Id)
+		return GetPostResponse{Post: *postptr, Err: err}, err
+	}
+}
+
 type Failer interface {
 	Failed() error
 }
 
 func (r NewPostResponse) Failed() error    { return r.Err }
 func (r DeletePostResponse) Failed() error { return r.Err }
+func (r GetPostResponse) Failed() error    { return r.Err }

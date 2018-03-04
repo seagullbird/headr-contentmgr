@@ -2,16 +2,20 @@ package service
 
 import (
 	"fmt"
-	"github.com/go-errors/errors"
 )
 
+// ErrPathNotExist indicates a PathNotExist error
 type ErrPathNotExist error
+
+// ErrUnexpected indicates an unexpected error
 type ErrUnexpected error
 
+// MakeErrPathNotExist returns a PathNotExist error with the given path.
 func MakeErrPathNotExist(path string) ErrPathNotExist {
-	return errors.New(fmt.Sprintf("Path not exist: %s", path))
+	return fmt.Errorf("Path not exist: %s", path)
 }
 
+// MakeErrUnexpected returns all unexpected error with error message.
 func MakeErrUnexpected(err error) ErrUnexpected {
-	return errors.New(fmt.Sprintf("Unexpected error: %v", err))
+	return fmt.Errorf("Unexpected error: %v", err)
 }

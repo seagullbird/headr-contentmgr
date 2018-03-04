@@ -18,3 +18,12 @@ type DeletePostRequest struct {
 type DeletePostResponse struct {
 	Err error `json:"-"`
 }
+
+type GetPostRequest struct {
+	Id uint `json:"id"`
+}
+
+type GetPostResponse struct {
+	db.Post
+	Err error `json:"-"`
+}

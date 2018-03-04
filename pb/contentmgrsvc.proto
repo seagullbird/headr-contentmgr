@@ -7,6 +7,7 @@ service Contentmgr {
     // Create a new post.
     rpc NewPost (CreateNewPostRequest) returns (CreateNewPostReply) {}
     rpc DeletePost (DeletePostRequest) returns (DeletePostReply) {}
+    rpc GetPost (GetPostRequest) returns (GetPostReply) {}
 }
 
 // The new post request contains zero parameters.
@@ -32,4 +33,19 @@ message DeletePostRequest {
 
 message DeletePostReply {
     string err = 1;
+}
+
+message GetPostRequest {
+    uint64 id = 1;
+}
+
+message GetPostReply {
+    string title = 1;
+    string summary = 2;
+    string content = 3;
+    string tags = 4;
+    string author = 5;
+    string sitename = 6;
+    string date = 7;
+    string err = 8;
 }

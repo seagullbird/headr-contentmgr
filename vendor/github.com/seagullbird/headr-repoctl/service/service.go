@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// Service describes a service that deals with local files in the persistent volume (repoctl).
 type Service interface {
 	NewSite(ctx context.Context, email, sitename string) error
 	DeleteSite(ctx context.Context, email, sitename string) error
@@ -21,10 +22,11 @@ type Service interface {
 	ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error)
 }
 
+// New returns a basic Service with all of the expected middlewares wired in.
 func New(dispatcher dispatch.Dispatcher, logger log.Logger) Service {
 	var svc Service
 	{
-		svc = NewBasicService(dispatcher)
+		svc = newBasicService(dispatcher)
 		svc = LoggingMiddleware(logger)(svc)
 	}
 	return svc
@@ -34,7 +36,7 @@ type basicService struct {
 	dispatcher dispatch.Dispatcher
 }
 
-func NewBasicService(dispatcher dispatch.Dispatcher) basicService {
+func newBasicService(dispatcher dispatch.Dispatcher) basicService {
 	return basicService{
 		dispatcher: dispatcher,
 	}
@@ -60,10 +62,7 @@ func (s basicService) DeleteSite(ctx context.Context, email, sitename string) er
 	}
 	cmd := exec.Command("rm", "-rf", sitepath)
 	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return err
-	}
-	return nil
+	return cmd.Run()
 }
 
 func (s basicService) WritePost(ctx context.Context, author, sitename, filename, content string) error {
