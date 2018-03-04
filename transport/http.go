@@ -40,6 +40,12 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 		encodeHTTPGenericResponse,
 		options...,
 	))
+	r.Methods("GET").Path("/posts/{id}").Handler(httptransport.NewServer(
+		endpoints.GetPostEndpoint,
+		decodeHTTPGetPostRequest,
+		encodeHTTPGenericResponse,
+		options...,
+	))
 	return r
 }
 
@@ -73,6 +79,19 @@ func decodeHTTPDeletePostRequest(_ context.Context, r *http.Request) (interface{
 		return nil, ErrBadRouting
 	}
 	return endpoint.DeletePostRequest{Id: uint(i)}, nil
+}
+
+func decodeHTTPGetPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, ErrBadRouting
+	}
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, ErrBadRouting
+	}
+	return endpoint.GetPostRequest{Id: uint(i)}, nil
 }
 
 func encodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {
