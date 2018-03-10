@@ -28,6 +28,11 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 		httptransport.ServerErrorLogger(logger),
 	}
 	r := mux.NewRouter()
+
+	// POST 	/posts/			add a post
+	// DELETE	/posts/:id		remove the given post
+	// GET    	/posts/:id	 	retrieve the given post by id
+
 	r.Methods("POST").Path("/posts/").Handler(httptransport.NewServer(
 		endpoints.NewPostEndpoint,
 		decodeHTTPNewPostRequest,
