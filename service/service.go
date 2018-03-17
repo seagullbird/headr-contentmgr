@@ -41,12 +41,12 @@ func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
 	}
 	filename := post.Filename + "." + post.Filetype
 	filecontent := post.String()
-	return id, s.repoctlsvc.WritePost(ctx, post.Author, post.Sitename, filename, filecontent)
+	return id, s.repoctlsvc.WritePost(ctx, post.SiteID, filename, filecontent)
 }
 
 func (s basicService) DeletePost(ctx context.Context, id uint) error {
 	postptr, _ := s.store.GetPost(id)
-	err := s.repoctlsvc.RemovePost(ctx, postptr.Author, postptr.Sitename, postptr.Filename+"."+postptr.Filetype)
+	err := s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (s basicService) DeletePost(ctx context.Context, id uint) error {
 
 func (s basicService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
 	postptr, _ := s.store.GetPost(id)
-	content, err := s.repoctlsvc.ReadPost(ctx, postptr.Author, postptr.Sitename, postptr.Filename+"."+postptr.Filetype)
+	content, err := s.repoctlsvc.ReadPost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return nil, err
 	}

@@ -16,9 +16,8 @@ message CreateNewPostRequest {
     string summary = 2;
     string content = 3;
     string tags = 4;
-    string author = 5;
-    string sitename = 6;
-    string date = 7;
+    uint64 site_id = 5;
+    string date = 6;
 }
 
 // The new post response contains the result of the creation.
@@ -44,8 +43,7 @@ message GetPostReply {
     string summary = 2;
     string content = 3;
     string tags = 4;
-    string author = 5;
-    string sitename = 6;
-    string date = 7;
-    string err = 8;
+    uint64 site_id = 5;
+    string date = 6;
+    string err = 7;
 }

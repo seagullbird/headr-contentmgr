@@ -31,15 +31,13 @@ func Test(t *testing.T) {
 	ctx := context.Background()
 
 	s := Site{
-		ctx:      ctx,
-		email:    "test-author",
-		sitename: "test-sitename",
+		ctx:    ctx,
+		siteID: 1,
 	}
 
 	p := Post{
 		ctx:      ctx,
-		author:   "test-author",
-		sitename: "test-sitename",
+		siteID:   1,
 		filename: "test-file.md",
 		content:  "test content\n",
 	}

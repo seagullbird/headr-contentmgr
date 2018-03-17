@@ -8,7 +8,7 @@ import (
 // ReadPost executes RPC call ReadPost to test if previously written file can be corretly read and returned.
 func ReadPost(t *testing.T, client *service.Service, p Post) {
 	c := *client
-	content, err := c.ReadPost(p.ctx, p.author, p.sitename, p.filename)
+	content, err := c.ReadPost(p.ctx, p.siteID, p.filename)
 	if err != nil {
 		t.Fatal(err)
 	}

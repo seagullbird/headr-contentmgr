@@ -1,5 +1,7 @@
 # repoctl
 
+[![wercker status](https://app.wercker.com/status/354d56c36a528a72bb6ee31c2c49f44a/s/master "wercker status")](https://app.wercker.com/project/byKey/354d56c36a528a72bb6ee31c2c49f44a)
+
 Project repoctl is mainly responsible for controlling and managing static repositories stored in Headr persistent volumes.
 
 These repositories include:

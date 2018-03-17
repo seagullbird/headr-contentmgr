@@ -6,16 +6,14 @@ import (
 
 // Site is a convenient struct for sending parameters only used in package tests.
 type Site struct {
-	ctx      context.Context
-	email    string
-	sitename string
+	ctx    context.Context
+	siteID uint
 }
 
 // Post is a convenient struct for sending parameters only used in package tests.
 type Post struct {
 	ctx      context.Context
-	author   string
-	sitename string
+	siteID   uint
 	filename string
 	content  string
 }

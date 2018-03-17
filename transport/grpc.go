@@ -118,13 +118,12 @@ func (s *grpcServer) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.G
 func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.NewPostRequest)
 	return &pb.CreateNewPostRequest{
-		Title:    req.Post.Title,
-		Summary:  req.Post.Summary,
-		Content:  req.Post.Content,
-		Tags:     req.Post.Tags,
-		Author:   req.Post.Author,
-		Sitename: req.Sitename,
-		Date:     req.Post.Date,
+		Title:   req.Post.Title,
+		Summary: req.Post.Summary,
+		Content: req.Post.Content,
+		Tags:    req.Post.Tags,
+		SiteId:  uint64(req.Post.SiteID),
+		Date:    req.Post.Date,
 	}, nil
 }
 
@@ -132,8 +131,7 @@ func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface
 	req := grpcReq.(*pb.CreateNewPostRequest)
 	return endpoint.NewPostRequest{
 		Post: db.Post{
-			Author:   req.Author,
-			Sitename: req.Sitename,
+			SiteID:   uint(req.SiteId),
 			Filename: req.Title,
 			Filetype: "md",
 			Title:    req.Title,
@@ -204,14 +202,13 @@ func decodeGRPCGetPostRequest(_ context.Context, grpcReq interface{}) (interface
 func encodeGRPCGetPostResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.GetPostResponse)
 	return &pb.GetPostReply{
-		Title:    resp.Post.Title,
-		Summary:  resp.Post.Summary,
-		Content:  resp.Post.Content,
-		Tags:     resp.Post.Tags,
-		Author:   resp.Post.Author,
-		Sitename: resp.Post.Sitename,
-		Date:     resp.Post.Date,
-		Err:      err2str(resp.Err),
+		Title:   resp.Post.Title,
+		Summary: resp.Post.Summary,
+		Content: resp.Post.Content,
+		Tags:    resp.Post.Tags,
+		SiteId:  uint64(resp.Post.SiteID),
+		Date:    resp.Post.Date,
+		Err:     err2str(resp.Err),
 	}, nil
 }
 
@@ -219,13 +216,12 @@ func decodeGRPCGetPostResponse(_ context.Context, grpcReply interface{}) (interf
 	reply := grpcReply.(*pb.GetPostReply)
 	return endpoint.GetPostResponse{
 		Post: db.Post{
-			Title:    reply.Title,
-			Summary:  reply.Summary,
-			Content:  reply.Content,
-			Tags:     reply.Tags,
-			Author:   reply.Author,
-			Sitename: reply.Sitename,
-			Date:     reply.Date,
+			Title:   reply.Title,
+			Summary: reply.Summary,
+			Content: reply.Content,
+			Tags:    reply.Tags,
+			SiteID:  uint(reply.SiteId),
+			Date:    reply.Date,
 		},
 		Err: str2err(reply.Err),
 	}, nil

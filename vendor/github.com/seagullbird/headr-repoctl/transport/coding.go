@@ -10,14 +10,13 @@ import (
 // NewSite
 func encodeGRPCNewSiteRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.NewSiteRequest)
-	return &pb.NewSiteRequest{Email: req.Email, Sitename: req.SiteName}, nil
+	return &pb.NewSiteRequest{SiteId: uint64(req.SiteID)}, nil
 }
 
 func decodeGRPCNewSiteRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.NewSiteRequest)
 	return endpoint.NewSiteRequest{
-		Email:    req.Email,
-		SiteName: req.Sitename,
+		SiteID: uint(req.SiteId),
 	}, nil
 }
 
@@ -36,14 +35,13 @@ func decodeGRPCNewSiteResponse(_ context.Context, grpcReply interface{}) (interf
 // DeleteSite
 func encodeGRPCDeleteSiteRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.DeleteSiteRequest)
-	return &pb.DeleteSiteRequest{Email: req.Email, Sitename: req.SiteName}, nil
+	return &pb.DeleteSiteRequest{SiteId: uint64(req.SiteID)}, nil
 }
 
 func decodeGRPCDeleteSiteRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.DeleteSiteRequest)
 	return endpoint.DeleteSiteRequest{
-		Email:    req.Email,
-		SiteName: req.Sitename,
+		SiteID: uint(req.SiteId),
 	}, nil
 }
 
@@ -63,8 +61,7 @@ func decodeGRPCDeleteSiteResponse(_ context.Context, grpcReply interface{}) (int
 func encodeGRPCWritePostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.WritePostRequest)
 	return &pb.WritePostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteId:   uint64(req.SiteID),
 		Filename: req.Filename,
 		Content:  req.Content,
 	}, nil
@@ -73,8 +70,7 @@ func encodeGRPCWritePostRequest(_ context.Context, request interface{}) (interfa
 func decodeGRPCWritePostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.WritePostRequest)
 	return endpoint.WritePostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteID:   uint(req.SiteId),
 		Filename: req.Filename,
 		Content:  req.Content,
 	}, nil
@@ -96,8 +92,7 @@ func decodeGRPCWritePostResponse(_ context.Context, grpcReply interface{}) (inte
 func encodeGRPCRemovePostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.RemovePostRequest)
 	return &pb.RemovePostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteId:   uint64(req.SiteID),
 		Filename: req.Filename,
 	}, nil
 }
@@ -105,8 +100,7 @@ func encodeGRPCRemovePostRequest(_ context.Context, request interface{}) (interf
 func decodeGRPCRemovePostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.RemovePostRequest)
 	return endpoint.RemovePostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteID:   uint(req.SiteId),
 		Filename: req.Filename,
 	}, nil
 }
@@ -127,8 +121,7 @@ func decodeGRPCRemovePostResponse(_ context.Context, grpcReply interface{}) (int
 func encodeGRPCReadPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.ReadPostRequest)
 	return &pb.ReadPostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteId:   uint64(req.SiteID),
 		Filename: req.Filename,
 	}, nil
 }
@@ -136,8 +129,7 @@ func encodeGRPCReadPostRequest(_ context.Context, request interface{}) (interfac
 func decodeGRPCReadPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.ReadPostRequest)
 	return endpoint.ReadPostRequest{
-		Author:   req.Author,
-		Sitename: req.Sitename,
+		SiteID:   uint(req.SiteId),
 		Filename: req.Filename,
 	}, nil
 }

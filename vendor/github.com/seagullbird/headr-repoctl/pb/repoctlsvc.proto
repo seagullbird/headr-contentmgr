@@ -12,8 +12,7 @@ service Repoctl {
 }
 
 message NewSiteRequest {
-    string email = 1;
-    string sitename = 2;
+    uint64 site_id = 1;
 }
 
 message NewSiteReply {
@@ -21,8 +20,7 @@ message NewSiteReply {
 }
 
 message DeleteSiteRequest {
-    string email = 1;
-    string sitename = 2;
+    uint64 site_id = 1;
 }
 
 message DeleteSiteReply {
@@ -30,10 +28,9 @@ message DeleteSiteReply {
 }
 
 message WritePostRequest {
-    string author = 1;
-    string sitename = 2;
-    string filename = 3;
-    string content = 4;
+    uint64 site_id = 1;
+    string filename = 2;
+    string content = 3;
 }
 
 message WritePostReply {
@@ -41,9 +38,8 @@ message WritePostReply {
 }
 
 message RemovePostRequest {
-    string author = 1;
-    string sitename = 2;
-    string filename = 3;
+    uint64 site_id = 1;
+    string filename = 2;
 }
 
 message RemovePostReply {
@@ -51,9 +47,8 @@ message RemovePostReply {
 }
 
 message ReadPostRequest {
-    string author = 1;
-    string sitename = 2;
-    string filename = 3;
+    uint64 site_id = 1;
+    string filename = 2;
 }
 
 message ReadPostReply {

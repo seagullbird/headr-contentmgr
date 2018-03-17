@@ -24,32 +24,32 @@ type loggingMiddleware struct {
 	next   Service
 }
 
-func (mw loggingMiddleware) NewSite(ctx context.Context, email, sitename string) (err error) {
-	err = mw.next.NewSite(ctx, email, sitename)
-	mw.logger.Log("method", "NewSite", "email", email, "sitename", sitename, "err", err)
+func (mw loggingMiddleware) NewSite(ctx context.Context, siteID uint) (err error) {
+	err = mw.next.NewSite(ctx, siteID)
+	mw.logger.Log("method", "NewSite", "siteID", siteID, "err", err)
 	return
 }
 
-func (mw loggingMiddleware) DeleteSite(ctx context.Context, email, sitename string) (err error) {
-	err = mw.next.DeleteSite(ctx, email, sitename)
-	mw.logger.Log("method", "DeleteSite", "email", email, "sitename", sitename, "err", err)
+func (mw loggingMiddleware) DeleteSite(ctx context.Context, siteID uint) (err error) {
+	err = mw.next.DeleteSite(ctx, siteID)
+	mw.logger.Log("method", "DeleteSite", "siteID", siteID, "err", err)
 	return
 }
 
-func (mw loggingMiddleware) WritePost(ctx context.Context, author, sitename, filename, content string) (err error) {
-	err = mw.next.WritePost(ctx, author, sitename, filename, content)
-	mw.logger.Log("method", "WritePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+func (mw loggingMiddleware) WritePost(ctx context.Context, siteID uint, filename, content string) (err error) {
+	err = mw.next.WritePost(ctx, siteID, filename, content)
+	mw.logger.Log("method", "WritePost", "siteID", siteID, "filename", filename, "err", err)
 	return
 }
 
-func (mw loggingMiddleware) RemovePost(ctx context.Context, author, sitename, filename string) (err error) {
-	err = mw.next.RemovePost(ctx, author, sitename, filename)
-	mw.logger.Log("method", "DeletePost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+func (mw loggingMiddleware) RemovePost(ctx context.Context, siteID uint, filename string) (err error) {
+	err = mw.next.RemovePost(ctx, siteID, filename)
+	mw.logger.Log("method", "DeletePost", "siteID", siteID, "filename", filename, "err", err)
 	return
 }
 
-func (mw loggingMiddleware) ReadPost(ctx context.Context, author, sitename, filename string) (content string, err error) {
-	content, err = mw.next.ReadPost(ctx, author, sitename, filename)
-	mw.logger.Log("method", "ReadPost", "author", author, "sitename", sitename, "filename", filename, "err", err)
+func (mw loggingMiddleware) ReadPost(ctx context.Context, siteID uint, filename string) (content string, err error) {
+	content, err = mw.next.ReadPost(ctx, siteID, filename)
+	mw.logger.Log("method", "ReadPost", "siteID", siteID, "filename", filename, "err", err)
 	return
 }

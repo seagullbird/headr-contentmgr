@@ -57,8 +57,8 @@ func New(svc service.Service, logger log.Logger) Set {
 
 // NewSite implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) NewSite(ctx context.Context, email, sitename string) error {
-	resp, err := s.NewSiteEndpoint(ctx, NewSiteRequest{Email: email, SiteName: sitename})
+func (s Set) NewSite(ctx context.Context, siteID uint) error {
+	resp, err := s.NewSiteEndpoint(ctx, NewSiteRequest{SiteID: siteID})
 	if err != nil {
 		return err
 	}
@@ -68,8 +68,8 @@ func (s Set) NewSite(ctx context.Context, email, sitename string) error {
 
 // DeleteSite implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) DeleteSite(ctx context.Context, email, sitename string) error {
-	resp, err := s.DeleteSiteEndpoint(ctx, DeleteSiteRequest{Email: email, SiteName: sitename})
+func (s Set) DeleteSite(ctx context.Context, siteID uint) error {
+	resp, err := s.DeleteSiteEndpoint(ctx, DeleteSiteRequest{SiteID: siteID})
 	if err != nil {
 		return err
 	}
@@ -79,10 +79,9 @@ func (s Set) DeleteSite(ctx context.Context, email, sitename string) error {
 
 // WritePost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) WritePost(ctx context.Context, author, sitename, filename, content string) error {
+func (s Set) WritePost(ctx context.Context, siteID uint, filename, content string) error {
 	resp, err := s.WritePostEndpoint(ctx, WritePostRequest{
-		Author:   author,
-		Sitename: sitename,
+		SiteID:   siteID,
 		Filename: filename,
 		Content:  content,
 	})
@@ -95,10 +94,9 @@ func (s Set) WritePost(ctx context.Context, author, sitename, filename, content 
 
 // RemovePost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) RemovePost(ctx context.Context, author, sitename, filename string) error {
+func (s Set) RemovePost(ctx context.Context, siteID uint, filename string) error {
 	resp, err := s.RemovePostEndpoint(ctx, RemovePostRequest{
-		Author:   author,
-		Sitename: sitename,
+		SiteID:   siteID,
 		Filename: filename,
 	})
 	if err != nil {
@@ -110,10 +108,9 @@ func (s Set) RemovePost(ctx context.Context, author, sitename, filename string) 
 
 // ReadPost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) ReadPost(ctx context.Context, author, sitename, filename string) (string, error) {
+func (s Set) ReadPost(ctx context.Context, siteID uint, filename string) (string, error) {
 	resp, err := s.ReadPostEndpoint(ctx, ReadPostRequest{
-		Author:   author,
-		Sitename: sitename,
+		SiteID:   siteID,
 		Filename: filename,
 	})
 	if err != nil {
@@ -127,7 +124,7 @@ func (s Set) ReadPost(ctx context.Context, author, sitename, filename string) (s
 func MakeNewSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewSiteRequest)
-		err = svc.NewSite(ctx, req.Email, req.SiteName)
+		err = svc.NewSite(ctx, req.SiteID)
 		return NewSiteResponse{Err: err}, err
 	}
 }
@@ -136,7 +133,7 @@ func MakeNewSiteEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeDeleteSiteEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(DeleteSiteRequest)
-		err = svc.DeleteSite(ctx, req.Email, req.SiteName)
+		err = svc.DeleteSite(ctx, req.SiteID)
 		return DeleteSiteResponse{Err: err}, err
 	}
 }
@@ -145,7 +142,7 @@ func MakeDeleteSiteEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeWritePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(WritePostRequest)
-		err = svc.WritePost(ctx, req.Author, req.Sitename, req.Filename, req.Content)
+		err = svc.WritePost(ctx, req.SiteID, req.Filename, req.Content)
 		return WritePostResponse{Err: err}, err
 	}
 }
@@ -154,7 +151,7 @@ func MakeWritePostEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeRemovePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(RemovePostRequest)
-		err = svc.RemovePost(ctx, req.Author, req.Sitename, req.Filename)
+		err = svc.RemovePost(ctx, req.SiteID, req.Filename)
 		return RemovePostResponse{Err: err}, err
 	}
 }
@@ -163,7 +160,7 @@ func MakeRemovePostEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeReadPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(ReadPostRequest)
-		content, err := svc.ReadPost(ctx, req.Author, req.Sitename, req.Filename)
+		content, err := svc.ReadPost(ctx, req.SiteID, req.Filename)
 		return ReadPostResponse{Content: content, Err: err}, err
 	}
 }

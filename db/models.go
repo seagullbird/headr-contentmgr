@@ -8,8 +8,7 @@ import (
 
 type Post struct {
 	gorm.Model
-	Author   string `json:"author"`
-	Sitename string `json:"sitename"`
+	SiteID   uint   `json:"site_id"`
 	Filename string `json:"filename"`
 	Filetype string `json:"filetype"`
 	Title    string `json:"title"`
