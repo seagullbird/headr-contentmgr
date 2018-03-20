@@ -8,8 +8,8 @@ services:
 
 build:
   steps:
-#    - wercker/golint:
-#      exclude: vendor
+    - wercker/golint:
+      exclude: vendor
     - setup-go-workspace:
         package-dir: github.com/seagullbird/headr-contentmgr
     - script:

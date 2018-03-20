@@ -9,7 +9,8 @@ import (
 // Middleware describes a service (as opposed to endpoint) middleware.
 type Middleware func(Service) Service
 
-// Logging Middleware
+// LoggingMiddleware takes a logger as a dependency
+// and returns a ServiceMiddleware.
 func LoggingMiddleware(logger log.Logger) Middleware {
 	return func(next Service) Service {
 		return loggingMiddleware{
@@ -40,4 +41,10 @@ func (mw loggingMiddleware) GetPost(ctx context.Context, id uint) (*db.Post, err
 	postptr, err := mw.next.GetPost(ctx, id)
 	mw.logger.Log("method", "GetPost", "id", id, "err", err)
 	return postptr, err
+}
+
+func (mw loggingMiddleware) GetAllPosts(ctx context.Context) ([]uint, error) {
+	postIDs, err := mw.next.GetAllPosts(ctx)
+	mw.logger.Log("method", "GetAllPosts")
+	return postIDs, err
 }

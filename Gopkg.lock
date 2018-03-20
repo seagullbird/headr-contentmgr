@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   name = "github.com/go-errors/errors"
   packages = ["."]
   revision = "3afebba5a48dbc89b574d890b6b34d9ee10b4785"
@@ -9,7 +15,7 @@
 
 [[projects]]
   name = "github.com/go-kit/kit"
-  packages = ["endpoint","log","transport/grpc","transport/http"]
+  packages = ["auth/jwt","endpoint","log","transport/grpc","transport/http"]
   revision = "4dc7be5d2d12881735283bcab7352178e190fc71"
   version = "v0.6.0"
 
@@ -112,6 +118,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "79c9e35921efab1cbc6534a63c2ae07d3011d3267ed79fe3435981c06c0b8c31"
+  inputs-digest = "fe7cbcb87e9de4feddaebb874373d90ccfb1e2888d478177761c5671701e5c01"
   solver-name = "gps-cdcl"
   solver-version = 1

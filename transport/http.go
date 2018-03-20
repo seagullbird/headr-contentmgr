@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/go-kit/kit/auth/jwt"
 	"github.com/go-kit/kit/log"
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
@@ -22,10 +23,13 @@ var (
 	ErrBadRouting = errors.New("inconsistent mapping between route and handler (programmer error)")
 )
 
+// NewHTTPHandler returns an HTTP handler that makes a set of endpoints
+// available on predefined paths.
 func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 	options := []httptransport.ServerOption{
 		httptransport.ServerErrorEncoder(errorEncoder),
 		httptransport.ServerErrorLogger(logger),
+		httptransport.ServerBefore(jwt.HTTPToContext()),
 	}
 	r := mux.NewRouter()
 
@@ -51,14 +55,23 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 		encodeHTTPGenericResponse,
 		options...,
 	))
+	r.Methods("GET").Path("/posts/").Handler(httptransport.NewServer(
+		endpoints.GetAllPostsEndpoint,
+		decodeHTTPGetAllPostsRequest,
+		encodeHTTPGenericResponse,
+		options...,
+	))
 	return r
 }
 
 func err2code(err error) int {
-	if err != nil {
-		return http.StatusInternalServerError
+	switch err {
+	case jwt.ErrTokenContextMissing, jwt.ErrTokenExpired, jwt.ErrTokenInvalid, jwt.ErrTokenMalformed, jwt.ErrTokenNotActive, jwt.ErrUnexpectedSigningMethod:
+		return http.StatusForbidden
+	case ErrBadRouting:
+		return http.StatusBadRequest
 	}
-	return http.StatusOK
+	return http.StatusInternalServerError
 }
 
 func errorEncoder(_ context.Context, err error, w http.ResponseWriter) {
@@ -83,7 +96,7 @@ func decodeHTTPDeletePostRequest(_ context.Context, r *http.Request) (interface{
 	if err != nil {
 		return nil, ErrBadRouting
 	}
-	return endpoint.DeletePostRequest{Id: uint(i)}, nil
+	return endpoint.DeletePostRequest{ID: uint(i)}, nil
 }
 
 func decodeHTTPGetPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
@@ -96,7 +109,11 @@ func decodeHTTPGetPostRequest(_ context.Context, r *http.Request) (interface{}, 
 	if err != nil {
 		return nil, ErrBadRouting
 	}
-	return endpoint.GetPostRequest{Id: uint(i)}, nil
+	return endpoint.GetPostRequest{ID: uint(i)}, nil
+}
+
+func decodeHTTPGetAllPostsRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	return endpoint.GetAllPostsRequest{}, nil
 }
 
 func encodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

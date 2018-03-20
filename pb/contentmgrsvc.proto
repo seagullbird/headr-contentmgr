@@ -8,6 +8,7 @@ service Contentmgr {
     rpc NewPost (CreateNewPostRequest) returns (CreateNewPostReply) {}
     rpc DeletePost (DeletePostRequest) returns (DeletePostReply) {}
     rpc GetPost (GetPostRequest) returns (GetPostReply) {}
+    rpc GetAllPosts (GetAllPostsRequest) returns (GetAllPostsReply) {}
 }
 
 // The new post request contains zero parameters.
@@ -46,4 +47,11 @@ message GetPostReply {
     uint64 site_id = 5;
     string date = 6;
     string err = 7;
+}
+
+message GetAllPostsRequest {}
+
+message GetAllPostsReply {
+    repeated uint64 post_ids = 1;
+    string err = 2;
 }

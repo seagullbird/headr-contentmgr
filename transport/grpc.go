@@ -3,6 +3,7 @@ package transport
 import (
 	"context"
 	"github.com/go-errors/errors"
+	"github.com/go-kit/kit/auth/jwt"
 	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	grpctransport "github.com/go-kit/kit/transport/grpc"
@@ -14,14 +15,17 @@ import (
 )
 
 type grpcServer struct {
-	newpost grpctransport.Handler
-	delpost grpctransport.Handler
-	getpost grpctransport.Handler
+	newpost     grpctransport.Handler
+	delpost     grpctransport.Handler
+	getpost     grpctransport.Handler
+	getallposts grpctransport.Handler
 }
 
+// NewGRPCServer makes a set of endpoints available as a gRPC ContentmgrServer.
 func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.ContentmgrServer {
 	options := []grpctransport.ServerOption{
 		grpctransport.ServerErrorLogger(logger),
+		grpctransport.ServerBefore(jwt.GRPCToContext()),
 	}
 	return &grpcServer{
 		newpost: grpctransport.NewServer(
@@ -42,10 +46,22 @@ func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.ContentmgrServe
 			encodeGRPCGetPostResponse,
 			options...,
 		),
+		getallposts: grpctransport.NewServer(
+			endpoints.GetAllPostsEndpoint,
+			decodeGRPCGetAllPostsRequest,
+			encodeGRPCGetAllPostsResponse,
+			options...,
+		),
 	}
 }
 
+// NewGRPCClient returns an ContentmgrService backed by a gRPC server at the other end
+// of the conn. The caller is responsible for constructing the conn, and
+// eventually closing the underlying transport.
 func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
+	options := []grpctransport.ClientOption{
+		grpctransport.ClientBefore(jwt.ContextToGRPC()),
+	}
 	var newpostEndpoint kitendpoint.Endpoint
 	{
 		newpostEndpoint = grpctransport.NewClient(
@@ -55,6 +71,7 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 			encodeGRPCNewPostRequest,
 			decodeGRPCNewPostResponse,
 			pb.CreateNewPostReply{},
+			options...,
 		).Endpoint()
 	}
 
@@ -67,6 +84,7 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 			encodeGRPCDeletePostRequest,
 			decodeGRPCDeletePostResponse,
 			pb.DeletePostReply{},
+			options...,
 		).Endpoint()
 	}
 	var getpostEndpoint kitendpoint.Endpoint
@@ -78,15 +96,29 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 			encodeGRPCGetPostRequest,
 			decodeGRPCGetPostResponse,
 			pb.GetPostReply{},
+			options...,
+		).Endpoint()
+	}
+	var getallpostsEndpoint kitendpoint.Endpoint
+	{
+		getallpostsEndpoint = grpctransport.NewClient(
+			conn,
+			"pb.Contentmgr",
+			"GetAllPosts",
+			encodeGRPCGetAllPostsRequest,
+			decodeGRPCGetAllPostsResponse,
+			pb.GetAllPostsReply{},
+			options...,
 		).Endpoint()
 	}
 	// Returning the endpoint.Set as a service.Service relies on the
 	// endpoint.Set implementing the Service methods. That's just a simple bit
 	// of glue code.
 	return endpoint.Set{
-		NewPostEndpoint:    newpostEndpoint,
-		DeletePostEndpoint: delpostEndpoint,
-		GetPostEndpoint:    getpostEndpoint,
+		NewPostEndpoint:     newpostEndpoint,
+		DeletePostEndpoint:  delpostEndpoint,
+		GetPostEndpoint:     getpostEndpoint,
+		GetAllPostsEndpoint: getallpostsEndpoint,
 	}
 }
 
@@ -112,6 +144,14 @@ func (s *grpcServer) GetPost(ctx context.Context, req *pb.GetPostRequest) (*pb.G
 		return nil, err
 	}
 	return rep.(*pb.GetPostReply), nil
+}
+
+func (s *grpcServer) GetAllPosts(ctx context.Context, req *pb.GetAllPostsRequest) (*pb.GetAllPostsReply, error) {
+	_, rep, err := s.getallposts.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.GetAllPostsReply), nil
 }
 
 // NewPost
@@ -147,28 +187,28 @@ func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface
 func encodeGRPCNewPostResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.NewPostResponse)
 	return &pb.CreateNewPostReply{
-		Id:  uint64(resp.Id),
+		Id:  uint64(resp.ID),
 		Err: err2str(resp.Err),
 	}, nil
 }
 
 func decodeGRPCNewPostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.CreateNewPostReply)
-	return endpoint.NewPostResponse{Id: uint(reply.Id), Err: str2err(reply.Err)}, nil
+	return endpoint.NewPostResponse{ID: uint(reply.Id), Err: str2err(reply.Err)}, nil
 }
 
 // DeletePost
 func encodeGRPCDeletePostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.DeletePostRequest)
 	return &pb.DeletePostRequest{
-		Id: uint64(req.Id),
+		Id: uint64(req.ID),
 	}, nil
 }
 
 func decodeGRPCDeletePostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.DeletePostRequest)
 	return endpoint.DeletePostRequest{
-		Id: uint(req.Id),
+		ID: uint(req.Id),
 	}, nil
 }
 
@@ -188,14 +228,14 @@ func decodeGRPCDeletePostResponse(_ context.Context, grpcReply interface{}) (int
 func encodeGRPCGetPostRequest(_ context.Context, request interface{}) (interface{}, error) {
 	req := request.(endpoint.GetPostRequest)
 	return &pb.GetPostRequest{
-		Id: uint64(req.Id),
+		Id: uint64(req.ID),
 	}, nil
 }
 
 func decodeGRPCGetPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	req := grpcReq.(*pb.GetPostRequest)
 	return endpoint.GetPostRequest{
-		Id: uint(req.Id),
+		ID: uint(req.Id),
 	}, nil
 }
 
@@ -224,6 +264,39 @@ func decodeGRPCGetPostResponse(_ context.Context, grpcReply interface{}) (interf
 			Date:    reply.Date,
 		},
 		Err: str2err(reply.Err),
+	}, nil
+}
+
+// GetAllPosts
+func encodeGRPCGetAllPostsRequest(_ context.Context, request interface{}) (interface{}, error) {
+	return &pb.GetAllPostsRequest{}, nil
+}
+
+func decodeGRPCGetAllPostsRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	return endpoint.GetAllPostsRequest{}, nil
+}
+
+func encodeGRPCGetAllPostsResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(endpoint.GetAllPostsResponse)
+	var temp = make([]uint64, len(resp.PostIDs))
+	for i, v := range temp {
+		temp[i] = uint64(v)
+	}
+	return &pb.GetAllPostsReply{
+		PostIds: temp,
+		Err:     err2str(resp.Err),
+	}, nil
+}
+
+func decodeGRPCGetAllPostsResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.GetAllPostsReply)
+	var temp = make([]uint, len(reply.PostIds))
+	for i, v := range temp {
+		temp[i] = uint(v)
+	}
+	return endpoint.GetAllPostsResponse{
+		PostIDs: temp,
+		Err:     str2err(reply.Err),
 	}, nil
 }
 

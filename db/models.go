@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Post is the ORM model for database table Post
 type Post struct {
 	gorm.Model
 	SiteID   uint   `json:"site_id"`
@@ -20,6 +21,7 @@ type Post struct {
 	Content  string `json:"content" gorm:"-"`
 }
 
+// String convert a Post model to its literal form
 func (p Post) String() string {
 	type FrontMatter struct {
 		Title string   `json:"title"`
