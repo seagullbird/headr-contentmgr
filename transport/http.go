@@ -36,6 +36,7 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 	// POST 	/posts/			add a post
 	// DELETE	/posts/:id		remove the given post
 	// GET    	/posts/:id	 	retrieve the given post by id
+	// GET	    /posts/         retrieve all posts of the authenticated user
 
 	r.Methods("POST").Path("/posts/").Handler(httptransport.NewServer(
 		endpoints.NewPostEndpoint,
