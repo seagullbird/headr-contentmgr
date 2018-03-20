@@ -41,6 +41,8 @@ func newBasicService(repoctlsvc repoctlservice.Service, store db.Store) basicSer
 }
 
 var (
+	// ErrPostNotFound indicates a post not found error
+	// could be the post does not exist or does not belong to the user
 	ErrPostNotFound = errors.New("post not found")
 )
 
