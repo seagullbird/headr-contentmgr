@@ -279,7 +279,7 @@ func decodeGRPCGetAllPostsRequest(_ context.Context, grpcReq interface{}) (inter
 func encodeGRPCGetAllPostsResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.GetAllPostsResponse)
 	var temp = make([]uint64, len(resp.PostIDs))
-	for i, v := range temp {
+	for i, v := range resp.PostIDs {
 		temp[i] = uint64(v)
 	}
 	return &pb.GetAllPostsReply{
@@ -291,7 +291,7 @@ func encodeGRPCGetAllPostsResponse(_ context.Context, response interface{}) (int
 func decodeGRPCGetAllPostsResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.GetAllPostsReply)
 	var temp = make([]uint, len(reply.PostIds))
-	for i, v := range temp {
+	for i, v := range reply.PostIds {
 		temp[i] = uint(v)
 	}
 	return endpoint.GetAllPostsResponse{
