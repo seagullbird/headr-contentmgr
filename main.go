@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/go-kit/kit/log"
+	"github.com/jinzhu/gorm"
 	"github.com/seagullbird/headr-contentmgr/config"
 	"github.com/seagullbird/headr-contentmgr/db"
 	"github.com/seagullbird/headr-contentmgr/endpoint"
@@ -34,7 +35,12 @@ func main() {
 	// repoctl service
 	repoctlsvc := repoctltransport.NewGRPCClient(conn, logger)
 	// database
-	store := db.New(logger)
+	dbConn, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		config.DEVDBHOST, config.DEVDBPORT, config.DEVDBUSER, config.DEVDBNAME, config.DEVDBPASSWORD, config.DEVDBSSLMODE))
+	if err != nil {
+		logger.Log("error_desc", "Failed to connected to PostgreSQL", "error", err)
+	}
+	store := db.New(dbConn)
 	var (
 		service    = service.New(repoctlsvc, store, logger)
 		endpoints  = endpoint.New(service, logger)

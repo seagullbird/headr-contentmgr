@@ -2,3 +2,4 @@
 .idea
 contentmgr
 tmp.yaml
+.wercker

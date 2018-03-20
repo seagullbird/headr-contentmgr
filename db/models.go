@@ -9,6 +9,7 @@ import (
 type Post struct {
 	gorm.Model
 	SiteID   uint   `json:"site_id"`
+	UserID   string `json:"user_id"`
 	Filename string `json:"filename"`
 	Filetype string `json:"filetype"`
 	Title    string `json:"title"`
