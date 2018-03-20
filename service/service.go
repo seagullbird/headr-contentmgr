@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	stdjwt "github.com/dgrijalva/jwt-go"
+	"github.com/go-errors/errors"
 	"github.com/go-kit/kit/auth/jwt"
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-contentmgr/db"
@@ -39,7 +40,13 @@ func newBasicService(repoctlsvc repoctlservice.Service, store db.Store) basicSer
 	}
 }
 
+var (
+	ErrPostNotFound = errors.New("post not found")
+)
+
 func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
+	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
+	post.UserID = userID
 	id, err := s.store.InsertPost(&post)
 	if err != nil {
 		return 0, err
@@ -50,17 +57,32 @@ func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
 }
 
 func (s basicService) DeletePost(ctx context.Context, id uint) error {
-	postptr, _ := s.store.GetPost(id)
-	err := s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
+	postptr, err := s.store.GetPost(id)
+	if err != nil {
+		return ErrPostNotFound
+	}
+	// Post does not belong to the authenticated user
+	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
+	if postptr.UserID != userID {
+		return ErrPostNotFound
+	}
+	err = s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return err
 	}
-	s.store.DeletePost(postptr)
-	return nil
+	return s.store.DeletePost(postptr)
 }
 
 func (s basicService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
-	postptr, _ := s.store.GetPost(id)
+	postptr, err := s.store.GetPost(id)
+	if err != nil {
+		return nil, ErrPostNotFound
+	}
+	// Post does not belong to the authenticated user
+	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
+	if postptr.UserID != userID {
+		return nil, ErrPostNotFound
+	}
 	content, err := s.repoctlsvc.ReadPost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return nil, err
