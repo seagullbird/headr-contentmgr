@@ -97,7 +97,16 @@ func (s basicService) RemovePost(ctx context.Context, siteID uint, filename stri
 	}
 	cmd := exec.Command("rm", postPath)
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	// Generate site
+	evt := mq.SiteUpdatedEvent{
+		SiteId:     siteID,
+		Theme:      config.InitialTheme,
+		ReceivedOn: time.Now().Unix(),
+	}
+	return s.dispatcher.DispatchMessage("re_generate", evt)
 }
 
 func (s basicService) ReadPost(ctx context.Context, siteID uint, filename string) (content string, err error) {
