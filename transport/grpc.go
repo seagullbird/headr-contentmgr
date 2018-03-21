@@ -123,7 +123,7 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 		patchpostEndpoint = grpctransport.NewClient(
 			conn,
 			"pb.Contentmgr",
-			"GetAllPosts",
+			"PatchPost",
 			encodeGRPCPatchPostRequest,
 			decodeGRPCPatchPostResponse,
 			pb.PatchPostReply{},
