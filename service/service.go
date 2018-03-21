@@ -8,6 +8,7 @@ import (
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-contentmgr/db"
 	repoctlservice "github.com/seagullbird/headr-repoctl/service"
+	"strings"
 )
 
 // Service describes a service that deals with content management operations (contentmgr).
@@ -85,10 +86,11 @@ func (s basicService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
 	if postptr.UserID != userID {
 		return nil, ErrPostNotFound
 	}
-	content, err := s.repoctlsvc.ReadPost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
+	wholeContent, err := s.repoctlsvc.ReadPost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 	if err != nil {
 		return nil, err
 	}
+	content := strings.Split(wholeContent, "<!--more-->")[1]
 	postptr.Content = content
 	return postptr, nil
 }
