@@ -1,6 +1,6 @@
 GOARCH?=amd64
 GOOS?=linux
-APP?=contentmgr
+APP?=./build/contentmgr
 PROJECT?=github.com/seagullbird/headr-contentmgr
 COMMIT?=$(shell git rev-parse --short HEAD)
 PORT?=8688
@@ -15,7 +15,7 @@ build: clean
 	-o ${APP}
 
 container: build
-	docker build -t contentmgr:${COMMIT} .
+	docker build -t contentmgr:${COMMIT} ./build
 
 minikube: container
 	cat k8s/k8s.yaml | \
