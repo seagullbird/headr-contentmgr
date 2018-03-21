@@ -16,6 +16,7 @@ type Service interface {
 	NewPost(ctx context.Context, post db.Post) (uint, error)
 	DeletePost(ctx context.Context, id uint) error
 	GetPost(ctx context.Context, id uint) (*db.Post, error)
+	PatchPost(ctx context.Context, post db.Post) error
 	GetAllPosts(ctx context.Context) ([]uint, error)
 }
 
@@ -100,6 +101,28 @@ func (s basicService) GetAllPosts(ctx context.Context) ([]uint, error) {
 	return s.store.GetAllPosts(userID)
 }
 
+func (s basicService) PatchPost(ctx context.Context, post db.Post) error {
+	existingPost, err := s.store.GetPost(post.ID)
+	if err != nil {
+		return err
+	}
+	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
+	if existingPost == nil || existingPost.UserID != userID {
+		return ErrPostNotFound
+	}
+	// TODO: Add Validation for post
+	currentPost, err := s.store.PatchPost(existingPost, &post)
+	if err != nil {
+		return err
+	}
+	if post.Content != "" {
+		currentPost.Content = post.Content
+	}
+	filename := post.Filename + "." + post.Filetype
+	filecontent := post.String()
+	return s.repoctlsvc.WritePost(ctx, post.SiteID, filename, filecontent)
+}
+
 // EmptyService is only used for transport tests
 type EmptyService struct{}
 
@@ -121,4 +144,9 @@ func (e EmptyService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
 // GetAllPosts implements Service.GetAllPosts
 func (e EmptyService) GetAllPosts(ctx context.Context) ([]uint, error) {
 	return nil, nil
+}
+
+// PatchPost implements Service.PatchPost
+func (e EmptyService) PatchPost(ctx context.Context, post db.Post) error {
+	return nil
 }

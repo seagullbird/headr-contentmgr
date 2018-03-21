@@ -43,3 +43,13 @@ type GetAllPostsResponse struct {
 	PostIDs []uint `json:"post_ids"`
 	Err     error  `json:"-"`
 }
+
+// PatchPostRequest collects the request parameters for the PatchPost method.
+type PatchPostRequest struct {
+	db.Post
+}
+
+// PatchPostResponse collects the response values for the PatchPost method.
+type PatchPostResponse struct {
+	Err error `json:"-"`
+}

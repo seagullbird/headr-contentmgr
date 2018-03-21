@@ -9,9 +9,9 @@ service Contentmgr {
     rpc DeletePost (DeletePostRequest) returns (DeletePostReply) {}
     rpc GetPost (GetPostRequest) returns (GetPostReply) {}
     rpc GetAllPosts (GetAllPostsRequest) returns (GetAllPostsReply) {}
+    rpc PatchPost (PatchPostRequest) returns (PatchPostReply) {}
 }
 
-// The new post request contains zero parameters.
 message CreateNewPostRequest {
     string title = 1;
     string summary = 2;
@@ -21,7 +21,6 @@ message CreateNewPostRequest {
     string date = 6;
 }
 
-// The new post response contains the result of the creation.
 message CreateNewPostReply {
     uint64 id = 1;
     string err = 2;
@@ -54,4 +53,18 @@ message GetAllPostsRequest {}
 message GetAllPostsReply {
     repeated uint64 post_ids = 1;
     string err = 2;
+}
+
+message PatchPostRequest {
+    string title = 1;
+    string summary = 2;
+    string content = 3;
+    string tags = 4;
+    bool draft = 5;
+    string date = 6;
+    uint64 post_id = 7;
+}
+
+message PatchPostReply {
+    string err = 1;
 }

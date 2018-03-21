@@ -37,6 +37,7 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 	// DELETE	/posts/:id		remove the given post
 	// GET    	/posts/:id	 	retrieve the given post by id
 	// GET	    /posts/         retrieve all posts of the authenticated user
+	// PATCH    /posts/:id		partial update a post
 
 	r.Methods("POST").Path("/posts/").Handler(httptransport.NewServer(
 		endpoints.NewPostEndpoint,
@@ -59,6 +60,12 @@ func NewHTTPHandler(endpoints endpoint.Set, logger log.Logger) http.Handler {
 	r.Methods("GET").Path("/posts/").Handler(httptransport.NewServer(
 		endpoints.GetAllPostsEndpoint,
 		decodeHTTPGetAllPostsRequest,
+		encodeHTTPGenericResponse,
+		options...,
+	))
+	r.Methods("PATCH").Path("/posts/{id}").Handler(httptransport.NewServer(
+		endpoints.PatchPostEndpoint,
+		decodeHTTPPatchPostRequest,
 		encodeHTTPGenericResponse,
 		options...,
 	))
@@ -115,6 +122,22 @@ func decodeHTTPGetPostRequest(_ context.Context, r *http.Request) (interface{}, 
 
 func decodeHTTPGetAllPostsRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	return endpoint.GetAllPostsRequest{}, nil
+}
+
+func decodeHTTPPatchPostRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return nil, ErrBadRouting
+	}
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, ErrBadRouting
+	}
+	var req endpoint.PatchPostRequest
+	err = json.NewDecoder(r.Body).Decode(&req.Post)
+	req.Post.ID = uint(i)
+	return req, err
 }
 
 func encodeHTTPGenericResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

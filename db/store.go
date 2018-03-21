@@ -11,7 +11,7 @@ type Store interface {
 	InsertPost(post *Post) (id uint, err error)
 	DeletePost(post *Post) error
 	GetPost(id uint) (*Post, error)
-	PatchPost(post *Post) error
+	PatchPost(existing, post *Post) (*Post, error)
 	GetAllPosts(userID string) ([]uint, error)
 }
 
@@ -42,8 +42,24 @@ func (s *databaseStore) GetPost(id uint) (*Post, error) {
 	return &post, err
 }
 
-func (s *databaseStore) PatchPost(post *Post) error {
-	return nil
+func (s *databaseStore) PatchPost(existing, post *Post) (*Post, error) {
+	if post.Title != "" {
+		existing.Title = post.Title
+	}
+	if post.Tags != "" {
+		existing.Tags = post.Tags
+	}
+	if post.Draft != existing.Draft {
+		existing.Draft = post.Draft
+	}
+	if post.Date != "" {
+		existing.Date = post.Date
+	}
+	if post.Summary != "" {
+		existing.Summary = post.Summary
+	}
+	err := s.db.Save(existing).Error
+	return existing, err
 }
 
 func (s *databaseStore) GetAllPosts(userID string) ([]uint, error) {

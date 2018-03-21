@@ -48,3 +48,9 @@ func (mw loggingMiddleware) GetAllPosts(ctx context.Context) ([]uint, error) {
 	mw.logger.Log("method", "GetAllPosts")
 	return postIDs, err
 }
+
+func (mw loggingMiddleware) PatchPost(ctx context.Context, post db.Post) error {
+	err := mw.next.PatchPost(ctx, post)
+	mw.logger.Log("method", "PatchPost", "post_id", post.ID)
+	return err
+}

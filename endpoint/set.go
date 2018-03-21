@@ -16,6 +16,7 @@ type Set struct {
 	DeletePostEndpoint  endpoint.Endpoint
 	GetPostEndpoint     endpoint.Endpoint
 	GetAllPostsEndpoint endpoint.Endpoint
+	PatchPostEndpoint   endpoint.Endpoint
 }
 
 // New returns a Set that wraps the provided server.
@@ -25,6 +26,7 @@ func New(svc service.Service, logger log.Logger) Set {
 		DeletePostEndpoint:  Middlewares(MakeDeletePostEndpoint(svc), logger),
 		GetPostEndpoint:     Middlewares(MakeGetPostEndpoint(svc), logger),
 		GetAllPostsEndpoint: Middlewares(MakeGetAllPostsEndpoint(svc), logger),
+		PatchPostEndpoint:   Middlewares(MakePatchPostEndpoint(svc), logger),
 	}
 }
 
@@ -72,6 +74,17 @@ func (s Set) GetAllPosts(ctx context.Context) ([]uint, error) {
 	return response.PostIDs, err
 }
 
+// PatchPost implements the service interface, so Set may be used as a service.
+// This is primarily useful in the context of a client library.
+func (s Set) PatchPost(ctx context.Context, post db.Post) error {
+	resp, err := s.PatchPostEndpoint(ctx, PatchPostRequest{})
+	if err != nil {
+		return err
+	}
+	response := resp.(PatchPostResponse)
+	return response.Err
+}
+
 // MakeNewPostEndpoint constructs a NewPost endpoint wrapping the service.
 func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
@@ -107,6 +120,15 @@ func MakeGetAllPostsEndpoint(svc service.Service) endpoint.Endpoint {
 	}
 }
 
+// MakePatchPostEndpoint constructs a PatchPost endpoint wrapping the service.
+func MakePatchPostEndpoint(svc service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+		req := request.(PatchPostRequest)
+		err = svc.PatchPost(ctx, req.Post)
+		return PatchPostResponse{Err: err}, err
+	}
+}
+
 // Failer is an interface that should be implemented by response types.
 // Response encoders can check if responses are Failer, and if so if they've
 // failed, and if so encode them using a separate write path based on the error.
@@ -125,3 +147,6 @@ func (r GetPostResponse) Failed() error { return r.Err }
 
 // Failed implements Failer.
 func (r GetAllPostsResponse) Failed() error { return r.Err }
+
+// Failed implements Failer.
+func (r PatchPostResponse) Failed() error { return r.Err }

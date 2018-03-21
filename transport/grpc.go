@@ -19,6 +19,7 @@ type grpcServer struct {
 	delpost     grpctransport.Handler
 	getpost     grpctransport.Handler
 	getallposts grpctransport.Handler
+	patchpost   grpctransport.Handler
 }
 
 // NewGRPCServer makes a set of endpoints available as a gRPC ContentmgrServer.
@@ -50,6 +51,12 @@ func NewGRPCServer(endpoints endpoint.Set, logger log.Logger) pb.ContentmgrServe
 			endpoints.GetAllPostsEndpoint,
 			decodeGRPCGetAllPostsRequest,
 			encodeGRPCGetAllPostsResponse,
+			options...,
+		),
+		patchpost: grpctransport.NewServer(
+			endpoints.PatchPostEndpoint,
+			decodeGRPCPatchPostRequest,
+			encodeGRPCPatchPostResponse,
 			options...,
 		),
 	}
@@ -111,6 +118,18 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 			options...,
 		).Endpoint()
 	}
+	var patchpostEndpoint kitendpoint.Endpoint
+	{
+		patchpostEndpoint = grpctransport.NewClient(
+			conn,
+			"pb.Contentmgr",
+			"GetAllPosts",
+			encodeGRPCPatchPostRequest,
+			decodeGRPCPatchPostResponse,
+			pb.PatchPostReply{},
+			options...,
+		).Endpoint()
+	}
 	// Returning the endpoint.Set as a service.Service relies on the
 	// endpoint.Set implementing the Service methods. That's just a simple bit
 	// of glue code.
@@ -119,6 +138,7 @@ func NewGRPCClient(conn *grpc.ClientConn, logger log.Logger) service.Service {
 		DeletePostEndpoint:  delpostEndpoint,
 		GetPostEndpoint:     getpostEndpoint,
 		GetAllPostsEndpoint: getallpostsEndpoint,
+		PatchPostEndpoint:   patchpostEndpoint,
 	}
 }
 
@@ -152,6 +172,14 @@ func (s *grpcServer) GetAllPosts(ctx context.Context, req *pb.GetAllPostsRequest
 		return nil, err
 	}
 	return rep.(*pb.GetAllPostsReply), nil
+}
+
+func (s *grpcServer) PatchPost(ctx context.Context, req *pb.PatchPostRequest) (*pb.PatchPostReply, error) {
+	_, rep, err := s.patchpost.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.PatchPostReply), nil
 }
 
 // NewPost
@@ -298,6 +326,46 @@ func decodeGRPCGetAllPostsResponse(_ context.Context, grpcReply interface{}) (in
 		PostIDs: temp,
 		Err:     str2err(reply.Err),
 	}, nil
+}
+
+// PatchPost
+func encodeGRPCPatchPostRequest(_ context.Context, request interface{}) (interface{}, error) {
+	req := request.(endpoint.PatchPostRequest)
+	return &pb.PatchPostRequest{
+		PostId:  uint64(req.Post.ID),
+		Title:   req.Post.Title,
+		Summary: req.Post.Summary,
+		Content: req.Post.Content,
+		Tags:    req.Post.Tags,
+		Date:    req.Post.Date,
+		Draft:   req.Post.Draft,
+	}, nil
+}
+
+func decodeGRPCPatchPostRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	req := grpcReq.(*pb.PatchPostRequest)
+	post := db.Post{
+		Title:   req.Title,
+		Date:    req.Date,
+		Draft:   req.Draft,
+		Tags:    req.Tags,
+		Summary: req.Summary,
+		Content: req.Content,
+	}
+	post.ID = uint(req.PostId)
+	return endpoint.PatchPostRequest{Post: post}, nil
+}
+
+func encodeGRPCPatchPostResponse(_ context.Context, response interface{}) (interface{}, error) {
+	resp := response.(endpoint.PatchPostResponse)
+	return &pb.PatchPostReply{
+		Err: err2str(resp.Err),
+	}, nil
+}
+
+func decodeGRPCPatchPostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
+	reply := grpcReply.(*pb.PatchPostReply)
+	return endpoint.PatchPostResponse{Err: str2err(reply.Err)}, nil
 }
 
 func err2str(err error) string {
