@@ -118,9 +118,9 @@ func (s basicService) PatchPost(ctx context.Context, post db.Post) error {
 	if post.Content != "" {
 		currentPost.Content = post.Content
 	}
-	filename := post.Filename + "." + post.Filetype
-	filecontent := post.String()
-	return s.repoctlsvc.WritePost(ctx, post.SiteID, filename, filecontent)
+	filename := currentPost.Filename + "." + currentPost.Filetype
+	filecontent := currentPost.String()
+	return s.repoctlsvc.WritePost(ctx, currentPost.SiteID, filename, filecontent)
 }
 
 // EmptyService is only used for transport tests
