@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-kit/kit/log"
 	"github.com/seagullbird/headr-common/mq"
+	"github.com/seagullbird/headr-common/mq/client"
 	"github.com/seagullbird/headr-common/mq/dispatch"
 	"github.com/seagullbird/headr-repoctl/config"
 	"github.com/seagullbird/headr-repoctl/endpoint"
@@ -29,12 +30,7 @@ func main() {
 		username   = mq.MQUSERNAME
 		passwd     = mq.MQSERVERPWD
 	)
-	conn, err := mq.MakeConn(servername, username, passwd)
-	if err != nil {
-		logger.Log("error_desc", "mq.MakeConn failed", "error", err)
-		return
-	}
-	dispatcher, err := dispatch.NewDispatcher(conn, logger)
+	dispatcher, err := dispatch.NewDispatcher(client.New(servername, username, passwd), logger)
 	if err != nil {
 		logger.Log("error_desc", "dispatch.NewDispatcher failed", "error", err)
 		return

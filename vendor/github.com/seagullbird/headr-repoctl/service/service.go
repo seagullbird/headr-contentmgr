@@ -45,7 +45,7 @@ func newBasicService(dispatcher dispatch.Dispatcher) basicService {
 
 func (s basicService) NewSite(ctx context.Context, siteID uint) error {
 	evt := mq.SiteUpdatedEvent{
-		SiteId:     siteID,
+		SiteID:     siteID,
 		Theme:      config.InitialTheme,
 		ReceivedOn: time.Now().Unix(),
 	}
@@ -80,7 +80,7 @@ func (s basicService) WritePost(ctx context.Context, siteID uint, filename, cont
 	}
 	// Generate site
 	evt := mq.SiteUpdatedEvent{
-		SiteId:     siteID,
+		SiteID:     siteID,
 		Theme:      config.InitialTheme,
 		ReceivedOn: time.Now().Unix(),
 	}
@@ -102,7 +102,7 @@ func (s basicService) RemovePost(ctx context.Context, siteID uint, filename stri
 	}
 	// Generate site
 	evt := mq.SiteUpdatedEvent{
-		SiteId:     siteID,
+		SiteID:     siteID,
 		Theme:      config.InitialTheme,
 		ReceivedOn: time.Now().Unix(),
 	}
