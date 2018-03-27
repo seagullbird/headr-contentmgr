@@ -21,6 +21,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/golang/mock"
+  packages = ["gomock"]
+  revision = "58cd061d09382b6011f84c1291ebe50ef2e25bab"
+
+[[projects]]
+  branch = "master"
   name = "github.com/kr/logfmt"
   packages = ["."]
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
@@ -31,9 +37,15 @@
   packages = ["."]
   revision = "fc7fda2371f5327ad39211e09482845b8734cc72"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dd6a4ec16458ce7aec69201535068a24faa69f7c53bf1ccdb4bc5578934c9cb2"
+  inputs-digest = "25385942653761166cba28549545a8ebeb7940f16cda3e9f64197329a9eb3035"
   solver-name = "gps-cdcl"
   solver-version = 1
