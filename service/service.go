@@ -1,5 +1,7 @@
 package service
 
+//go:generate mockgen -destination=./mock/mock_service.go -package=mock github.com/seagullbird/headr-contentmgr/service Service
+
 import (
 	"context"
 	stdjwt "github.com/dgrijalva/jwt-go"
@@ -15,7 +17,7 @@ import (
 type Service interface {
 	NewPost(ctx context.Context, post db.Post) (uint, error)
 	DeletePost(ctx context.Context, id uint) error
-	GetPost(ctx context.Context, id uint) (*db.Post, error)
+	GetPost(ctx context.Context, id uint) (db.Post, error)
 	PatchPost(ctx context.Context, post db.Post) error
 	GetAllPosts(ctx context.Context) ([]uint, error)
 }
@@ -77,23 +79,24 @@ func (s basicService) DeletePost(ctx context.Context, id uint) error {
 	return s.store.DeletePost(postptr)
 }
 
-func (s basicService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
+func (s basicService) GetPost(ctx context.Context, id uint) (db.Post, error) {
 	postptr, err := s.store.GetPost(id)
+	post := *postptr
 	if err != nil {
-		return nil, ErrPostNotFound
+		return post, ErrPostNotFound
 	}
 	// Post does not belong to the authenticated user
 	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
-	if postptr.UserID != userID {
-		return nil, ErrPostNotFound
+	if post.UserID != userID {
+		return post, ErrPostNotFound
 	}
-	wholeContent, err := s.repoctlsvc.ReadPost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
+	wholeContent, err := s.repoctlsvc.ReadPost(ctx, post.SiteID, post.Filename+"."+post.Filetype)
 	if err != nil {
-		return nil, err
+		return post, err
 	}
 	content := strings.Split(wholeContent, "<!--more-->")[1]
-	postptr.Content = content
-	return postptr, nil
+	post.Content = content
+	return post, nil
 }
 
 func (s basicService) GetAllPosts(ctx context.Context) ([]uint, error) {
@@ -121,32 +124,4 @@ func (s basicService) PatchPost(ctx context.Context, post db.Post) error {
 	filename := currentPost.Filename + "." + currentPost.Filetype
 	filecontent := currentPost.String()
 	return s.repoctlsvc.WritePost(ctx, currentPost.SiteID, filename, filecontent)
-}
-
-// EmptyService is only used for transport tests
-type EmptyService struct{}
-
-// NewPost implements Service.NewPost
-func (e EmptyService) NewPost(ctx context.Context, post db.Post) (uint, error) {
-	return 0, nil
-}
-
-// DeletePost implements Service.DeletePost
-func (e EmptyService) DeletePost(ctx context.Context, id uint) error {
-	return nil
-}
-
-// GetPost implements Service.GetPost
-func (e EmptyService) GetPost(ctx context.Context, id uint) (*db.Post, error) {
-	return nil, nil
-}
-
-// GetAllPosts implements Service.GetAllPosts
-func (e EmptyService) GetAllPosts(ctx context.Context) ([]uint, error) {
-	return nil, nil
-}
-
-// PatchPost implements Service.PatchPost
-func (e EmptyService) PatchPost(ctx context.Context, post db.Post) error {
-	return nil
 }

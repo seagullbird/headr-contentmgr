@@ -54,13 +54,13 @@ func (s Set) DeletePost(ctx context.Context, id uint) error {
 
 // GetPost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) GetPost(ctx context.Context, id uint) (*db.Post, error) {
+func (s Set) GetPost(ctx context.Context, id uint) (db.Post, error) {
 	resp, err := s.GetPostEndpoint(ctx, GetPostRequest{ID: id})
 	if err != nil {
-		return nil, err
+		return db.Post{}, err
 	}
 	response := resp.(GetPostResponse)
-	return &response.Post, err
+	return response.Post, response.Err
 }
 
 // GetAllPosts implements the service interface, so Set may be used as a service.
@@ -71,7 +71,7 @@ func (s Set) GetAllPosts(ctx context.Context) ([]uint, error) {
 		return nil, err
 	}
 	response := resp.(GetAllPostsResponse)
-	return response.PostIDs, err
+	return response.PostIDs, response.Err
 }
 
 // PatchPost implements the service interface, so Set may be used as a service.
@@ -90,7 +90,7 @@ func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(NewPostRequest)
 		id, err := svc.NewPost(ctx, req.Post)
-		return NewPostResponse{ID: id, Err: err}, err
+		return NewPostResponse{ID: id, Err: err}, nil
 	}
 }
 
@@ -99,7 +99,7 @@ func MakeDeletePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(DeletePostRequest)
 		err = svc.DeletePost(ctx, req.ID)
-		return DeletePostResponse{Err: err}, err
+		return DeletePostResponse{Err: err}, nil
 	}
 }
 
@@ -107,8 +107,8 @@ func MakeDeletePostEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeGetPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(GetPostRequest)
-		postptr, err := svc.GetPost(ctx, req.ID)
-		return GetPostResponse{Post: *postptr, Err: err}, err
+		post, err := svc.GetPost(ctx, req.ID)
+		return GetPostResponse{Post: post, Err: err}, nil
 	}
 }
 
@@ -116,7 +116,7 @@ func MakeGetPostEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeGetAllPostsEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		postIDs, err := svc.GetAllPosts(ctx)
-		return GetAllPostsResponse{PostIDs: postIDs, Err: err}, err
+		return GetAllPostsResponse{PostIDs: postIDs, Err: err}, nil
 	}
 }
 
@@ -125,7 +125,7 @@ func MakePatchPostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(PatchPostRequest)
 		err = svc.PatchPost(ctx, req.Post)
-		return PatchPostResponse{Err: err}, err
+		return PatchPostResponse{Err: err}, nil
 	}
 }
 

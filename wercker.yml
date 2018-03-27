@@ -21,6 +21,6 @@ build:
           while ! $(python -c "import socket; soc=socket.socket(); soc.connect(('$POSTGRES_PORT_5432_TCP_ADDR', $POSTGRES_PORT_5432_TCP_PORT))"); \
           do sleep 3; done
     - script:
-        name: go test
+        name: "Test"
         code: |
-          go test -v ./...
+          ./test.sh
