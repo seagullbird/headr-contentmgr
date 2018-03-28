@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"github.com/go-kit/kit/auth/jwt"
+	kitendpoint "github.com/go-kit/kit/endpoint"
 	"github.com/go-kit/kit/log"
 	"github.com/golang/mock/gomock"
 	"github.com/seagullbird/headr-common/auth"
@@ -100,5 +101,40 @@ func TestSet(t *testing.T) {
 				}
 			})
 		})
+	}
+}
+
+// In fact this part is tested in grpc_test.TestGRPCTransport, dual here for good coverage report
+func TestSetBadEndpoint(t *testing.T) {
+	makeBadEndpoint := func(resp interface{}) kitendpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			r := resp.(endpoint.Failer)
+			return nil, r.Failed()
+		}
+	}
+
+	endpoints := endpoint.Set{
+		NewPostEndpoint:     makeBadEndpoint(endpoint.NewPostResponse{ID: 1, Err: errors.New("dummy error")}),
+		DeletePostEndpoint:  makeBadEndpoint(endpoint.DeletePostResponse{Err: errors.New("dummy error")}),
+		GetPostEndpoint:     makeBadEndpoint(endpoint.GetPostResponse{Err: errors.New("dummy error")}),
+		GetAllPostsEndpoint: makeBadEndpoint(endpoint.GetAllPostsResponse{PostIDs: []uint{}, Err: errors.New("dummy error")}),
+		PatchPostEndpoint:   makeBadEndpoint(endpoint.PatchPostResponse{Err: errors.New("dummy error")}),
+	}
+
+	expectedMsg := "dummy error"
+	if _, err := endpoints.NewPost(context.Background(), db.Post{}); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := endpoints.DeletePost(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if _, err := endpoints.GetPost(context.Background(), 1); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if _, err := endpoints.GetAllPosts(context.Background()); err.Error() != expectedMsg {
+		t.Fatal(err)
+	}
+	if err := endpoints.PatchPost(context.Background(), db.Post{}); err.Error() != expectedMsg {
+		t.Fatal(err)
 	}
 }
