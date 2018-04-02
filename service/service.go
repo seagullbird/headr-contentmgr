@@ -72,11 +72,11 @@ func (s basicService) DeletePost(ctx context.Context, id uint) error {
 	if postptr.UserID != userID {
 		return ErrPostNotFound
 	}
-	err = s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
+	err = s.store.DeletePost(postptr)
 	if err != nil {
 		return err
 	}
-	return s.store.DeletePost(postptr)
+	return s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
 }
 
 func (s basicService) GetPost(ctx context.Context, id uint) (db.Post, error) {
