@@ -15,6 +15,7 @@ import (
 
 // Service describes a service that deals with content management operations (contentmgr).
 type Service interface {
+	// TODO: Add DeleteAllPosts service for sitemgr, do not need to be exposed by http. Just grpc
 	NewPost(ctx context.Context, post db.Post) (uint, error)
 	DeletePost(ctx context.Context, id uint) error
 	GetPost(ctx context.Context, id uint) (db.Post, error)
