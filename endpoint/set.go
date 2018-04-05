@@ -77,7 +77,7 @@ func (s Set) GetAllPosts(ctx context.Context) ([]uint, error) {
 // PatchPost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
 func (s Set) PatchPost(ctx context.Context, post db.Post) error {
-	resp, err := s.PatchPostEndpoint(ctx, PatchPostRequest{})
+	resp, err := s.PatchPostEndpoint(ctx, PatchPostRequest{Post: post})
 	if err != nil {
 		return err
 	}
