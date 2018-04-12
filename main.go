@@ -35,8 +35,7 @@ func main() {
 	// repoctl service
 	repoctlsvc := repoctltransport.NewGRPCClient(conn, logger)
 	// database
-	dbConn, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		config.DEVDBHOST, config.DEVDBPORT, config.DEVDBUSER, config.DEVDBNAME, config.DEVDBPASSWORD, config.DEVDBSSLMODE))
+	dbConn, err := gorm.Open("postgres", os.Getenv("POSTGRESQL_ARGS"))
 	if err != nil {
 		logger.Log("error_desc", "Failed to connected to PostgreSQL", "error", err)
 	}
