@@ -43,13 +43,13 @@ func (s Set) NewPost(ctx context.Context, post db.Post) (uint, error) {
 
 // DeletePost implements the service interface, so Set may be used as a service.
 // This is primarily useful in the context of a client library.
-func (s Set) DeletePost(ctx context.Context, id uint) error {
+func (s Set) DeletePost(ctx context.Context, id uint) (uint, error) {
 	resp, err := s.DeletePostEndpoint(ctx, DeletePostRequest{ID: id})
 	if err != nil {
-		return err
+		return 0, err
 	}
 	response := resp.(DeletePostResponse)
-	return response.Err
+	return response.ID, response.Err
 }
 
 // GetPost implements the service interface, so Set may be used as a service.
@@ -98,8 +98,8 @@ func MakeNewPostEndpoint(svc service.Service) endpoint.Endpoint {
 func MakeDeletePostEndpoint(svc service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(DeletePostRequest)
-		err = svc.DeletePost(ctx, req.ID)
-		return DeletePostResponse{Err: err}, nil
+		id, err := svc.DeletePost(ctx, req.ID)
+		return DeletePostResponse{ID: id, Err: err}, nil
 	}
 }
 

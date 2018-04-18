@@ -42,14 +42,14 @@ func TestGRPCApplication(t *testing.T) {
 	for _, rets := range []map[string][]interface{}{
 		{
 			"NewPost":     {uint(1), nil},
-			"DeletePost":  {nil},
+			"DeletePost":  {uint(1), nil},
 			"GetPost":     {db.Post{}, nil},
 			"PatchPost":   {nil},
 			"GetAllPosts": {[]uint{}, nil},
 		},
 		{
 			"NewPost":     {uint(0), dummyError},
-			"DeletePost":  {dummyError},
+			"DeletePost":  {uint(0), dummyError},
 			"GetPost":     {db.Post{}, dummyError},
 			"PatchPost":   {dummyError},
 			"GetAllPosts": {[]uint{}, dummyError},
@@ -119,11 +119,10 @@ func TestGRPCApplication(t *testing.T) {
 			})
 			t.Run("DeletePost", func(t *testing.T) {
 				siteID := uint(1)
-				clientErr := client.DeletePost(ctx, siteID)
-				svcErr := mockSvc.DeletePost(ctx, siteID)
+				clientPostID, clientErr := client.DeletePost(ctx, siteID)
+				svcPostID, svcErr := mockSvc.DeletePost(ctx, siteID)
 				if !tt.judger(clientErr, svcErr) {
-					t.Fatal("\nclientErr: ", clientErr, "\nsvcErr: ", svcErr)
-
+					t.Fatal("\nclientPostID: ", clientPostID, "\nclientErr: ", clientErr, "\nsvcPostID: ", svcPostID, "\nsvcErr: ", svcErr)
 				}
 			})
 			t.Run("GetPost", func(t *testing.T) {
@@ -184,7 +183,7 @@ func TestGRPCTransport(t *testing.T) {
 	if _, err := client.NewPost(context.Background(), post); err.Error() != expectedMsg {
 		t.Fatal(err)
 	}
-	if err := client.DeletePost(context.Background(), 1); err.Error() != expectedMsg {
+	if _, err := client.DeletePost(context.Background(), 1); err.Error() != expectedMsg {
 		t.Fatal(err)
 	}
 	if _, err := client.GetPost(context.Background(), 1); err.Error() != expectedMsg {

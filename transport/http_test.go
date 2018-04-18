@@ -76,14 +76,14 @@ func TestHTTP(t *testing.T) {
 	for _, rets := range []map[string][]interface{}{
 		{
 			"NewPost":     {uint(1), nil},
-			"DeletePost":  {nil},
+			"DeletePost":  {uint(1), nil},
 			"GetPost":     {db.Post{}, nil},
 			"PatchPost":   {nil},
 			"GetAllPosts": {[]uint{}, nil},
 		},
 		{
 			"NewPost":     {uint(0), dummyError},
-			"DeletePost":  {dummyError},
+			"DeletePost":  {uint(0), dummyError},
 			"GetPost":     {db.Post{}, dummyError},
 			"PatchPost":   {dummyError},
 			"GetAllPosts": {[]uint{}, dummyError},
@@ -116,7 +116,7 @@ func TestHTTP(t *testing.T) {
 	}{
 		"No Error": {
 			{"NewPost", "/posts/", "POST", "{}", http.StatusOK, "{\"id\":1}"},
-			{"DeletePost", "/posts/1", "DELETE", "", http.StatusOK, "{}"},
+			{"DeletePost", "/posts/1", "DELETE", "", http.StatusOK, "{\"id\":1}"},
 			{"GetPost", "/posts/1", "GET", "", http.StatusOK, "{\"ID\":0,\"CreatedAt\":\"0001-01-01T00:00:00Z\",\"UpdatedAt\":\"0001-01-01T00:00:00Z\",\"DeletedAt\":null,\"site_id\":0,\"user_id\":\"\",\"filename\":\"\",\"filetype\":\"\",\"title\":\"\",\"date\":\"\",\"draft\":false,\"tags\":\"\",\"summary\":\"\",\"content\":\"\"}"},
 			{"PatchPost", "/posts/1", "PATCH", "{}", http.StatusOK, "{}"},
 			{"GetAllPosts", "/posts/", "GET", "", http.StatusOK, "{\"post_ids\":[]}"},

@@ -35,10 +35,11 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // DeletePost mocks base method
-func (m *MockService) DeletePost(arg0 context.Context, arg1 uint) error {
+func (m *MockService) DeletePost(arg0 context.Context, arg1 uint) (uint, error) {
 	ret := m.ctrl.Call(m, "DeletePost", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(uint)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // DeletePost indicates an expected call of DeletePost

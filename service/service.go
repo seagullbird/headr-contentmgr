@@ -17,7 +17,7 @@ import (
 type Service interface {
 	// TODO: Add DeleteAllPosts service for sitemgr, do not need to be exposed by http. Just grpc
 	NewPost(ctx context.Context, post db.Post) (uint, error)
-	DeletePost(ctx context.Context, id uint) error
+	DeletePost(ctx context.Context, id uint) (uint, error)
 	GetPost(ctx context.Context, id uint) (db.Post, error)
 	PatchPost(ctx context.Context, post db.Post) error
 	GetAllPosts(ctx context.Context) ([]uint, error)
@@ -63,21 +63,24 @@ func (s basicService) NewPost(ctx context.Context, post db.Post) (uint, error) {
 	return id, s.repoctlsvc.WritePost(ctx, post.SiteID, filename, filecontent)
 }
 
-func (s basicService) DeletePost(ctx context.Context, id uint) error {
+func (s basicService) DeletePost(ctx context.Context, id uint) (uint, error) {
 	postptr, err := s.store.GetPost(id)
 	if err != nil {
-		return ErrPostNotFound
+		return 0, ErrPostNotFound
 	}
 	// Post does not belong to the authenticated user
 	userID := ctx.Value(jwt.JWTClaimsContextKey).(stdjwt.MapClaims)["sub"].(string)
 	if postptr.UserID != userID {
-		return ErrPostNotFound
+		return 0, ErrPostNotFound
 	}
 	err = s.store.DeletePost(postptr)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype)
+	if err := s.repoctlsvc.RemovePost(ctx, postptr.SiteID, postptr.Filename+"."+postptr.Filetype); err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (s basicService) GetPost(ctx context.Context, id uint) (db.Post, error) {

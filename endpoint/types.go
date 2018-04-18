@@ -20,6 +20,7 @@ type DeletePostRequest struct {
 
 // DeletePostResponse collects the response values for the DeletePost method.
 type DeletePostResponse struct {
+	ID  uint  `json:"id"`
 	Err error `json:"-"`
 }
 

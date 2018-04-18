@@ -36,14 +36,14 @@ func TestSet(t *testing.T) {
 	}{
 		{"No Error", map[string][]interface{}{
 			"NewPost":     {uint(1), nil},
-			"DeletePost":  {nil},
+			"DeletePost":  {uint(1), nil},
 			"GetPost":     {db.Post{}, nil},
 			"PatchPost":   {nil},
 			"GetAllPosts": {[]uint{}, nil},
 		}},
 		{"Dummy Error", map[string][]interface{}{
 			"NewPost":     {uint(0), dummyError},
-			"DeletePost":  {dummyError},
+			"DeletePost":  {uint(0), dummyError},
 			"GetPost":     {db.Post{}, dummyError},
 			"PatchPost":   {dummyError},
 			"GetAllPosts": {[]uint{}, dummyError},
@@ -70,10 +70,10 @@ func TestSet(t *testing.T) {
 			})
 			t.Run("DeletePost", func(t *testing.T) {
 				postID := uint(1)
-				setErr := endpoints.DeletePost(ctx, postID)
-				svcErr := mockSvc.DeletePost(ctx, postID)
+				setPostID, setErr := endpoints.DeletePost(ctx, postID)
+				svcPostID, svcErr := mockSvc.DeletePost(ctx, postID)
 				if setErr != svcErr {
-					t.Fatal("\nsetErr: ", setErr, "\nsvcErr: ", svcErr)
+					t.Fatal("\nsetPostID: ", setPostID, "\nsetErr: ", setErr, "\nsvcPostID: ", svcPostID, "\nsvcErr: ", svcErr)
 
 				}
 			})
@@ -125,7 +125,7 @@ func TestSetBadEndpoint(t *testing.T) {
 	if _, err := endpoints.NewPost(context.Background(), db.Post{}); err.Error() != expectedMsg {
 		t.Fatal(err)
 	}
-	if err := endpoints.DeletePost(context.Background(), 1); err.Error() != expectedMsg {
+	if _, err := endpoints.DeletePost(context.Background(), 1); err.Error() != expectedMsg {
 		t.Fatal(err)
 	}
 	if _, err := endpoints.GetPost(context.Background(), 1); err.Error() != expectedMsg {
