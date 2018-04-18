@@ -95,7 +95,7 @@ func (s basicService) GetPost(ctx context.Context, id uint) (db.Post, error) {
 	if err != nil {
 		return post, err
 	}
-	content := strings.Split(wholeContent, "<!--more-->")[1]
+	content := strings.TrimLeft(strings.Split(wholeContent, "<!--more-->")[1], "\n")
 	post.Content = content
 	return post, nil
 }

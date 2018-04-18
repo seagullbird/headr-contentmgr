@@ -3,6 +3,7 @@ package db
 import (
 	"github.com/jinzhu/gorm"
 	// used for database connection
+	"errors"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
@@ -28,6 +29,11 @@ func New(db *gorm.DB) Store {
 }
 
 func (s *databaseStore) InsertPost(post *Post) (id uint, err error) {
+	var p []Post
+	s.db.Where("title = ?", post.Title).Find(&p)
+	if len(p) > 0 {
+		return 0, errors.New("title already exists")
+	}
 	err = s.db.Create(post).Error
 	return post.Model.ID, err
 }
