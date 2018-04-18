@@ -9,7 +9,6 @@ import (
 	httptransport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"github.com/seagullbird/headr-contentmgr/endpoint"
-	"github.com/seagullbird/headr-contentmgr/service"
 	"net/http"
 	"strconv"
 )
@@ -79,8 +78,12 @@ func err2code(err error) int {
 		return http.StatusForbidden
 	case ErrBadRouting:
 		return http.StatusBadRequest
-	case service.ErrPostNotFound:
+	}
+	if err.Error() == "post not found" {
 		return http.StatusNotFound
+	}
+	if err.Error() == "title already exists" {
+		return http.StatusBadRequest
 	}
 	return http.StatusInternalServerError
 }
