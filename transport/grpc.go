@@ -243,13 +243,14 @@ func decodeGRPCDeletePostRequest(_ context.Context, grpcReq interface{}) (interf
 func encodeGRPCDeletePostResponse(_ context.Context, response interface{}) (interface{}, error) {
 	resp := response.(endpoint.DeletePostResponse)
 	return &pb.DeletePostReply{
+		Id:  uint64(resp.ID),
 		Err: err2str(resp.Err),
 	}, nil
 }
 
 func decodeGRPCDeletePostResponse(_ context.Context, grpcReply interface{}) (interface{}, error) {
 	reply := grpcReply.(*pb.DeletePostReply)
-	return endpoint.DeletePostResponse{Err: str2err(reply.Err)}, nil
+	return endpoint.DeletePostResponse{ID: uint(reply.Id), Err: str2err(reply.Err)}, nil
 }
 
 // GetPost

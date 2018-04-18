@@ -31,10 +31,10 @@ func (mw loggingMiddleware) NewPost(ctx context.Context, post db.Post) (id uint,
 	return
 }
 
-func (mw loggingMiddleware) DeletePost(ctx context.Context, id uint) error {
-	err := mw.next.DeletePost(ctx, id)
+func (mw loggingMiddleware) DeletePost(ctx context.Context, id uint) (uint, error) {
+	id, err := mw.next.DeletePost(ctx, id)
 	mw.logger.Log("method", "DeletePost", "id", id, "err", err)
-	return err
+	return id, err
 }
 
 func (mw loggingMiddleware) GetPost(ctx context.Context, id uint) (db.Post, error) {
