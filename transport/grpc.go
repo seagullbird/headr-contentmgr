@@ -192,6 +192,7 @@ func encodeGRPCNewPostRequest(_ context.Context, request interface{}) (interface
 		Tags:    req.Post.Tags,
 		SiteId:  uint64(req.Post.SiteID),
 		Date:    req.Post.Date,
+		Draft:   req.Post.Draft,
 	}, nil
 }
 
@@ -204,7 +205,7 @@ func decodeGRPCNewPostRequest(_ context.Context, grpcReq interface{}) (interface
 			Filetype: "md",
 			Title:    req.Title,
 			Date:     req.Date,
-			Draft:    false,
+			Draft:    req.Draft,
 			Tags:     req.Tags,
 			Summary:  req.Summary,
 			Content:  req.Content,
@@ -278,6 +279,7 @@ func encodeGRPCGetPostResponse(_ context.Context, response interface{}) (interfa
 		SiteId:  uint64(resp.Post.SiteID),
 		Date:    resp.Post.Date,
 		Err:     err2str(resp.Err),
+		Draft:   resp.Post.Draft,
 	}, nil
 }
 
@@ -291,6 +293,7 @@ func decodeGRPCGetPostResponse(_ context.Context, grpcReply interface{}) (interf
 			Tags:    reply.Tags,
 			SiteID:  uint(reply.SiteId),
 			Date:    reply.Date,
+			Draft:   reply.Draft,
 		},
 		Err: str2err(reply.Err),
 	}, nil

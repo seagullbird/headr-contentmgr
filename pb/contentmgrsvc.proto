@@ -19,6 +19,7 @@ message CreateNewPostRequest {
     string tags = 4;
     uint64 site_id = 5;
     string date = 6;
+    bool   draft = 7;
 }
 
 message CreateNewPostReply {
@@ -47,6 +48,7 @@ message GetPostReply {
     uint64 site_id = 5;
     string date = 6;
     string err = 7;
+    bool   draft = 8;
 }
 
 message GetAllPostsRequest {}
