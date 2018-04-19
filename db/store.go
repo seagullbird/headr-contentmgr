@@ -52,7 +52,7 @@ func (s *databaseStore) PatchPost(existing, post *Post) (*Post, error) {
 	if post.Title != "" {
 		existing.Title = post.Title
 	}
-	if post.Tags != "" {
+	if post.Tags != existing.Tags {
 		existing.Tags = post.Tags
 	}
 	if post.Draft != existing.Draft {
@@ -61,7 +61,7 @@ func (s *databaseStore) PatchPost(existing, post *Post) (*Post, error) {
 	if post.Date != "" {
 		existing.Date = post.Date
 	}
-	if post.Summary != "" {
+	if post.Summary != existing.Summary {
 		existing.Summary = post.Summary
 	}
 	err := s.db.Save(existing).Error
