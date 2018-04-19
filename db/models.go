@@ -34,7 +34,9 @@ func (p Post) String() string {
 		Title: p.Title,
 		Date:  p.Date,
 		Draft: p.Draft,
-		Tags:  strings.Split(p.Tags, " "),
+	}
+	if len(p.Tags) != 0 {
+		fm.Tags = strings.Split(p.Tags, " ")
 	}
 	fmsRaw, _ := json.MarshalIndent(&fm, "", "  ")
 	fms := string(fmsRaw) + "\n"
